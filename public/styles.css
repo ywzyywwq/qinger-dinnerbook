@@ -55,3 +55,21 @@ main{padding:0 18px 60px;}
 .album-body{display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto;}
 .album-body img{width:320px; height:240px; object-fit:cover; border-radius:10px;}
 footer{color:var(--muted); text-align:center; padding:20px;}
+/* === 手机端：让“记录晚餐”按钮始终在屏幕内可见 === */
+@media (max-width: 768px) {
+  /* 上传文件输入框别太宽，给右侧按钮留空间 */
+  input[type="file"] {
+    width: 58vw;          /* 可按需要调成 55~65 之间 */
+    max-width: 58vw;
+    min-width: 180px;     /* 防止过窄不好点 */
+  }
+
+  /* 紧跟在文件输入后的按钮（无论是 <button> 或 <a>）不换行不被挤出 */
+  input[type="file"] ~ button,
+  input[type="file"] ~ a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    display: inline-block;
+    margin-left: 8px;     /* 和输入框留点间距 */
+  }
+}
