@@ -1,8 +1,11 @@
 {
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "public": true
+  "version": 2,
+  "builds": [
+    { "src": "public/**", "use": "@vercel/static" },
+    { "src": "api/*.js", "use": "@vercel/node", "config": { "runtime": "nodejs20.x" } }
+  ],
+  "routes": [
+    { "src": "/api/.*", "dest": "/api/upload.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
 }
