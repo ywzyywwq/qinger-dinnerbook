@@ -90,3 +90,68 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     overflow-x: hidden;
   }
 }
+/* 手机端：列表视图改成 3 列卡片网格 */
+@media (max-width: 768px) {
+  /* 卡片列表容器：改成网格，3 列，卡片之间留间距 */
+  .album-body {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  /* 单个卡片占满网格格子 */
+  .album-body .card,
+  .album-body .item,
+  .album-body .record {
+    width: 100% !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* 缩略图：正方形裁切，铺满卡片宽度 */
+  .album-body .card img,
+  .album-body .item img,
+  .album-body .record img {
+    width: 100%;
+    aspect-ratio: 1 / 1;         /* iOS/Safari 支持，正方形 */
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  /* 让图片下方内容(标题/日期/按钮)上下留点距 */
+  .album-body .card > *:not(img),
+  .album-body .item > *:not(img),
+  .album-body .record > *:not(img) {
+    margin-top: 6px;
+    min-width: 0;                /* 防止文字把卡片撑宽 */
+  }
+
+  /* 查看/删除按钮一行展示，左右分布（适配你现有按钮） */
+  .album-body .card button,
+  .album-body .item button,
+  .album-body .record button {
+    width: 48%;
+  }
+  .album-body .card .btns,
+  .album-body .item .btns,
+  .album-body .record .btns {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  /* 如果你的按钮没有单独的 .btns 容器，也能大体排好 */
+  .album-body .card button + button,
+  .album-body .item button + button,
+  .album-body .record button + button {
+    margin-left: 6px;
+  }
+
+  /* 保险：清理可能遗留的固定宽度 */
+  .album-body [style*="width: 480px"],
+  .album-body [style*="width:480px"] {
+    width: auto !important;
+  }
+}
