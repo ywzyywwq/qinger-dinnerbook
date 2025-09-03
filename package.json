@@ -1,0 +1,15 @@
+{
+  "name": "qinger-recipes-cloud",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/blob": "0.23.4"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "build": "echo 'Static front-end + serverless api on Vercel'"
+  }
+}
