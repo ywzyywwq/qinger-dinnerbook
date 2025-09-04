@@ -139,3 +139,17 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     overflow-x: hidden;
   }
 }
+/* —— 防止影响月视图：main 里有 .month-grid 时，不做多列 —— */
+@media (max-width: 768px) {
+  main:has(.month-grid) {
+    column-count: 1 !important;
+    column-gap: 0 !important;
+  }
+}
+
+/* —— 窄屏（小于 420px）自动降为 2 列 —— */
+@media (max-width: 420px) {
+  main {
+    column-count: 2;
+  }
+}
