@@ -26,14 +26,7 @@ header .title{ font-weight:700; }
 /* 通用按钮 */
 .btn{ border:0; background:var(--prim); color:var(--prim-ink); padding:10px 14px; border-radius:10px; cursor:pointer; }
 .btn.ghost{ background:#eef4ef; color:var(--ink); border:1px solid var(--bd); }
-/* 替换原本的红色 danger 样式 */
-.btn.danger {
-  background: #7aa890;   /* 柔和的绿灰色 */
-  color: #fff;
-}
-.btn.danger:hover {
-  background: #5f8b74;   /* hover 时深一点 */
-}
+.btn.danger{ background:#de6a6a; }
 .muted{ color:var(--muted); font-size:12px; }
 
 /* ===== 工具条 ===== */
