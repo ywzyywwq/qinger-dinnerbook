@@ -170,3 +170,5 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     padding: 10px;
   }
 }
+main { column-gap: 18px; padding: 0 6px 60px; }
+.card { margin: 0 0 18px; }
