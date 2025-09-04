@@ -3,7 +3,7 @@
   --card: #ffffff;
   --ink: #2c3e2c;
   --muted: #6a7d6a;
-  --prim: #9ad5aa;       /* 主绿色，改成方案 C */
+  --prim: #6aa67a;
   --prim-ink:#ffffff;
   --bd:#d7e3d8;
 }
@@ -24,22 +24,47 @@ header{ display:flex; align-items:center; gap:12px; padding:14px 18px; }
 header img.avatar{width:28px;height:28px;border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1);}
 header .title{font-weight:700;}
 
-.btn{border:0; background:var(--prim); color:var(--prim-ink); padding:10px 14px; border-radius:10px; cursor:pointer;}
-.btn.ghost{background:#eef4ef;color:var(--ink); border:1px solid var(--bd);}
+.btn{
+  border:0;
+  background:var(--prim);
+  color:var(--prim-ink);
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.btn.ghost{
+  background:#eef4ef;
+  color:var(--ink);
+  border:1px solid var(--bd);
+}
 
-/* 删除/清空按钮 → 保持橙色 */
-.btn.danger{ background:#ff9966; color:#fff; }
-.btn.danger:hover{ background:#e57a45; }
+/* danger 换成柑橘橙 */
+.btn.danger{
+  background:#ff9f45;   /* 明亮橙色 */
+  color:#fff;
+}
+.btn.danger:hover{
+  background:#e68a2e;   /* hover 深一点 */
+}
 
 /* 工具条 */
 .bar{display:flex; gap:10px; align-items:center; padding:0 18px 14px;}
 .bar input[type="date"], .bar input[type="text"], .bar input[type="file"]{
-  background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:10px;
+  padding:10px 12px;
 }
 
 /* 搜索行 */
 .search{display:flex; gap:10px; align-items:center; padding:0 18px 8px;}
-.search input{flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;}
+.search input{
+  flex:1;
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:10px;
+  padding:10px 12px;
+}
 .muted{color:var(--muted); font-size:12px;}
 
 /* 列表区域 */
@@ -125,7 +150,7 @@ footer{color:var(--muted); text-align:center; padding:20px;}
 }
 .tools-bottom .btn{ min-width:90px; text-align:center; }
 
-/* 手机端 */
+/* 手机端：2 列卡片 + 工具条换行 */
 @media (max-width: 768px) {
   .bar{ flex-wrap:wrap; }
   .bar input[type="file"]{ flex:1 1 100%; width:100%; max-width:100%; }
@@ -138,5 +163,6 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     gap:12px;
   }
   .card{ margin:0; }
+
   .card-title{ font-size:16px; }
 }
