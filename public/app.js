@@ -155,11 +155,16 @@ function renderList(list) {
     const el = document.createElement('div');
     el.className = 'card';
     el.innerHTML = `
-      <div class="card-hd">
-        <div><b>${rec.name}</b></div>
-        <div class="muted">${rec.date} · ${rec.photos.length}张图</div>
-      </div>
-      <div class="thumbs">${thumbs}</div>
+  <div class="card-hd">
+    <div class="card-title">${rec.name}</div>
+    <div class="card-date">${rec.date}</div>
+  </div>
+  <div class="thumbs">${thumbs}</div>
+  <div class="ops">
+    <button class="btn ghost" data-act="view" data-id="${rec.id}">查看</button>
+    <button class="btn danger" data-act="del" data-id="${rec.id}">删除</button>
+  </div>
+`;
       <div class="ops">
         <button class="btn ghost" data-act="view" data-id="${rec.id}">查看</button>
         <button class="btn danger" data-act="del"  data-id="${rec.id}">删除</button>
