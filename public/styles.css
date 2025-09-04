@@ -123,3 +123,16 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     overflow-x: hidden;
   }
 }
+.tools-bottom {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--bg);
+  border-top: 1px solid var(--bd);
+}
+
+.tools-bottom .btn {
+  min-width: 90px;       /* 每个按钮宽度一致 */
+  text-align: center;
+}
