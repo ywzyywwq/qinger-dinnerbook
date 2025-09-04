@@ -153,13 +153,20 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     column-count: 2;
   }
 }
-/* 手机端：让两边边距和列间距一致，看齐 */
 @media (max-width: 768px) {
+  /* 调整列间距与左右边距，避免四舍五入带来的“看起来不齐” */
   main {
-    padding: 0 12px 60px;   /* 从 18px 改为 12px，与 column-gap 一致 */
-    column-gap: 12px;       /* 保持一致的缝隙 */
+    column-count: 3;
+    column-gap: 16px;     /* 列间距改大一点 */
+    padding: 0 8px 60px;  /* 左右改小一点（和上面的 16 错开）*/
   }
+
   .card {
-    margin: 0 0 12px;       /* 只留底部间距，避免左右再“撑开” */
+    display: inline-block;
+    width: 100%;
+    break-inside: avoid;
+    margin: 0 0 16px;     /* 仅保留下间距；确保列宽不被左右 margin 影响 */
+    border-radius: 14px;
+    padding: 10px;
   }
 }
