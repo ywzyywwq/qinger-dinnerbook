@@ -143,6 +143,7 @@ function render() {
   if (state.view === 'list') renderList(filtered);
   else renderMonth(filtered);
 }
+
 function renderList(list) {
   const wrap = $('#list-wrap');
   wrap.innerHTML = '';
@@ -154,17 +155,13 @@ function renderList(list) {
     const thumbs = rec.photos.map(p=>`<img class="thumb" src="${p.thumb}" data-url="${p.url}" title="点我查看大图">`).join('');
     const el = document.createElement('div');
     el.className = 'card';
+    // 这里：标题与日期分两行（卡片头部不再并排）
     el.innerHTML = `
-  <div class="card-hd">
-    <div class="card-title">${rec.name}</div>
-    <div class="card-date">${rec.date}</div>
-  </div>
-  <div class="thumbs">${thumbs}</div>
-  <div class="ops">
-    <button class="btn ghost" data-act="view" data-id="${rec.id}">查看</button>
-    <button class="btn danger" data-act="del" data-id="${rec.id}">删除</button>
-  </div>
-`;
+      <div class="card-hd">
+        <div class="card-title">${rec.name}</div>
+        <div class="card-date">${rec.date}</div>
+      </div>
+      <div class="thumbs">${thumbs}</div>
       <div class="ops">
         <button class="btn ghost" data-act="view" data-id="${rec.id}">查看</button>
         <button class="btn danger" data-act="del"  data-id="${rec.id}">删除</button>
@@ -187,6 +184,7 @@ function renderList(list) {
     });
   });
 }
+
 function renderMonth(list) {
   const grid  = $('#month-grid');
   const title = $('#month-title');
@@ -309,21 +307,3 @@ else bindRecordOnce();
 /* ================= Init ================= */
 $('#date').value = fmt(new Date());
 load();
-
-/* ========== 卡片标题与日期分行（纯 JS） ========== */
-(function () {
-  function formatHeader(hd) {
-    if (!hd || hd.dataset.fixed === '1') return;
-    const raw = hd.textContent.trim().replace(/\s+/g, ' ');
-    const m = raw.match(/(\d{4}-\d{2}-\d{2})/);
-    if (!m) return;
-    const date  = m[1];
-    const title = raw.slice(0, m.index).trim();
-    hd.innerHTML = `<span class="title">${title}</span><span class="date">${date}</span>`;
-    hd.dataset.fixed = '1';
-  }
-  function sweep(){ document.querySelectorAll('.card-hd').forEach(formatHeader); }
-  sweep();
-  const main = document.querySelector('main');
-  if (main) new MutationObserver(sweep).observe(main, { childList: true, subtree: true });
-})();
