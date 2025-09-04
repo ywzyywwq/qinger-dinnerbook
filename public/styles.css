@@ -90,55 +90,39 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     overflow-x: hidden;
   }
 }
-/* === 手机端：3列瀑布流，卡片对齐加强版 === */
+/* === 手机端 3 列瀑布流：两侧对齐修正 === */
 @media (max-width: 768px) {
-  /* 工具条保持换行 */
-  .bar { flex-wrap: wrap; }
-  .bar input[type="file"] { flex: 1 1 100%; width: 100%; max-width: 100%; }
-  .bar input[type="file"]::-webkit-file-upload-button { padding: 6px 10px; }
-  .bar input[type="file"] ~ button,
-  .bar input[type="file"] ~ a {
-    flex: 1 1 100%; width: 100%; margin-left: 0; margin-top: 8px; white-space: nowrap; text-align: center;
-  }
-
-  /* 关键：列间距与左右内边距都用 12px，让多数 iPhone 宽度下列宽变成整数像素 */
+  /* 关键：左右 padding = 列间距，看起来就齐了 */
   main {
+    padding: 0 12px 60px;     /* 原来是 0 18px 60px，改成和 gap 一样的 12px */
     column-count: 3;
-    column-gap: 12px;        /* 列间距 */
-    padding: 0 12px 60px;    /* 左右内边距 = 12px */
-    max-width: 100%;
-    overflow-x: hidden;
+    column-gap: 12px;
+    -webkit-column-count: 3;
+    -webkit-column-gap: 12px;
   }
 
-  /* 卡片自己不再占左右外边距，只保留下间距，避免影响列宽计算 */
   .card {
-    display: inline-block;
+    display: inline-block;    /* 参与列布局 */
     width: 100%;
+    margin: 0 0 12px;         /* 只留下方间距，左右不留，避免看起来“歪” */
     break-inside: avoid;
-    margin: 0 0 12px;        /* 只要下间距 */
-    border-radius: 14px;
-    padding: 10px;
-    /* 下面两行进一步减少 iOS 上的“毛边感”，可留可去 */
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
   }
 
-  .thumbs { display: block; }
+  /* 图片撑满卡片，防止边框/阴影引起的舍入误差显眼 */
   .thumb {
     width: 100%;
     height: auto;
-    aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: 10px;
   }
 
-  .card-hd {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin: 8px 0 6px;
+  /* 兜底：禁止横向滚动条 */
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
   }
-  .ops { display: flex; gap: 8px; margin-top: 8px; }
+}
 }
 /* ===== 卡片标题一行、日期下一行；隐藏“1张图” ===== */
 .card-hd {
