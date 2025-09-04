@@ -1,35 +1,45 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>情儿的食谱 · 云存版</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" href="/icons/icon-180.png">
-  <meta name="theme-color" content="#e9f2ea">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, initial-scale=1" />
+  <title>情儿的食谱 · 本地保存 + 云端原图</title>
+
+  <!-- 样式 -->
+  <link rel="stylesheet" href="/styles.css?v=20250904" />
+  <!-- PWA 图标（如果你原来有） -->
+  <link rel="icon" href="/icons/icon-180.png" />
+  <meta name="theme-color" content="#e9f2ea" />
 </head>
 <body>
+  <!-- 顶部 -->
   <header>
-    <img class="avatar" src="/icons/icon-64.png" alt="">
+    <img class="avatar" src="/icons/icon-64.png" alt="" />
     <div class="title">情儿的食谱 · 本地保存 + 云端原图</div>
     <div style="flex:1"></div>
     <button id="toggle-view" class="btn ghost">月视图</button>
   </header>
 
+  <!-- 工具条：日期 / 菜名 / 选择图片 / 记录晚餐 -->
   <div class="bar">
-    <input id="date" type="date">
-    <input id="name" type="text" placeholder="菜名，如：上汤娃娃菜 / 咸蛋黄鸡翅" style="flex:1">
-    <input id="file" type="file" accept="image/*">
+    <input id="date" type="date" />
+    <input id="name" type="text" placeholder="菜名，如：上汤娃娃菜 / 咸蛋黄鸡翅" style="flex:1" />
+    <input id="file" type="file" accept="image/*" />
     <button id="record-btn" class="btn">记录晚餐</button>
   </div>
-  
+
+  <!-- 搜索 + 清空（保持原有结构和 id，便于你现有 JS 使用） -->
+  <div class="search">
+    <input id="search" type="search" placeholder="搜索菜名或日期（例：番茄 / 2025-09-03）" />
     <button id="clear-all" class="btn danger">清空全部</button>
   </div>
 
+  <!-- 列表模式：这里面会被你的 JS 渲染卡片 -->
   <main id="list-mode">
     <div id="list-wrap"></div>
   </main>
 
+  <!-- 月视图（保持原结构，默认隐藏） -->
   <section id="month-mode" style="display:none">
     <div class="month-head">
       <button id="prev-month" class="btn ghost">上个月</button>
@@ -39,40 +49,36 @@
     <div class="month-grid" id="month-grid"></div>
   </section>
 
+  <!-- 大图预览（单张） -->
   <div class="overlay" id="lightbox">
-    <button class="close">✕</button>
+    <button class="close">×</button>
     <div class="box"><img src="" alt=""></div>
   </div>
 
+  <!-- 相册预览（多张） -->
   <div class="overlay" id="album">
-    <button class="close">✕</button>
+    <button class="close">×</button>
     <div class="box">
       <div class="album-body"></div>
     </div>
   </div>
 
+  <!-- 底部版权 -->
   <footer>
-  <p class="muted">© 2025 情儿的食谱</p>
-  
-  <!-- 工具按钮放在最下面 -->
-  <div class="tools-bottom">
-    <button class="btn ghost">导出 CSV</button>
-    <button class="btn ghost">备份 JSON</button>
-    <button class="btn ghost">导入 JSON</button>
-  </div>
-</footer>
-  <script>
-    // 列表/月视图切换
-    const btn = document.getElementById('toggle-view');
-    const listMode = document.getElementById('list-mode');
-    const monthMode = document.getElementById('month-mode');
-    btn.addEventListener('click', () => {
-      const toMonth = monthMode.style.display === 'none';
-      monthMode.style.display = toMonth ? '' : 'none';
-      listMode.style.display = toMonth ? 'none' : '';
-      btn.textContent = toMonth ? '列表视图' : '月视图';
-    });
-  </script>
+    <p class="muted">© 2025 情儿的食谱</p>
+
+    <!-- 你要求：导出 / 备份 / 导入 放到最底部 -->
+    <div class="tools-bottom">
+      <button id="export-csv"   class="btn ghost">导出 CSV</button>
+      <button id="backup-json"  class="btn ghost">备份 JSON</button>
+
+      <!-- 导入：用 label 触发隐藏的 file，更稳 -->
+      <input  id="import-json" type="file" accept="application/json" style="display:none" />
+      <label for="import-json" class="btn ghost">导入 JSON</label>
+    </div>
+  </footer>
+
+  <!-- 你原来的脚本放这里（保持不变即可） -->
   <script src="/app.js"></script>
 </body>
 </html>
