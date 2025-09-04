@@ -350,3 +350,41 @@ $('#album').addEventListener('click', (e)=>{
 // init
 $('#date').value = fmt(new Date());
 load();
+<script>
+(function () {
+  function formatHeader(hd) {
+    if (!hd || hd.dataset.fixed === "1") return;
+
+    // 取出原始文本，例如：“萝卜干炒毛豆 2025-09-03 · 1张图”
+    const raw = hd.textContent.trim().replace(/\s+/g, ' ');
+
+    // 匹配日期
+    const m = raw.match(/(\d{4}-\d{2}-\d{2})/);
+    if (!m) return;
+
+    const date = m[1];
+    const title = raw.slice(0, m.index).trim();
+
+    // 重写为：标题一行 + 日期一行
+    hd.innerHTML = `
+      <span class="title">${title}</span>
+      <span class="date">${date}</span>
+    `;
+    hd.dataset.fixed = "1";
+  }
+
+  function sweep() {
+    document.querySelectorAll('.card-hd').forEach(formatHeader);
+  }
+
+  // 初始整理一次
+  sweep();
+
+  // 监听 main 内部变化（列表刷新、上传后重渲染等）
+  const main = document.querySelector('main');
+  if (main) {
+    const ob = new MutationObserver(() => sweep());
+    ob.observe(main, { childList: true, subtree: true });
+  }
+})();
+</script>
