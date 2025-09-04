@@ -8,48 +8,42 @@
   --bd:#d7e3d8;
 }
 
-/* ===== 基础 ===== */
+/* 基础 */
 *{ box-sizing:border-box; }
-html,body{ height:100%; max-width:100%; overflow-x:hidden; }
+html,body{ height:100%; }
 body{
   margin:0;
   background:linear-gradient(180deg,#f3f7f3,#e9f2ea);
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
 }
+html, body { max-width:100%; overflow-x:hidden; }
 
-/* ===== 顶部 ===== */
+/* 顶部与按钮 */
 header{ display:flex; align-items:center; gap:12px; padding:14px 18px; }
-header img.avatar{ width:28px; height:28px; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1); }
-header .title{ font-weight:700; }
+header img.avatar{width:28px;height:28px;border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1);}
+header .title{font-weight:700;}
 
-/* 通用按钮 */
-.btn{ border:0; background:var(--prim); color:var(--prim-ink); padding:10px 14px; border-radius:10px; cursor:pointer; }
-.btn.ghost{ background:#eef4ef; color:var(--ink); border:1px solid var(--bd); }
-.btn.danger{ background:#de6a6a; }
-.muted{ color:var(--muted); font-size:12px; }
+.btn{border:0; background:var(--prim); color:var(--prim-ink); padding:10px 14px; border-radius:10px; cursor:pointer;}
+.btn.ghost{background:#eef4ef;color:var(--ink); border:1px solid var(--bd);}
 
-/* ===== 工具条 ===== */
-.bar{ display:flex; gap:10px; align-items:center; padding:0 18px 14px; }
-.bar input[type="date"],
-.bar input[type="text"],
-.bar input[type="file"]{
-  background:var(--card);
-  border:1px solid var(--bd);
-  border-radius:10px;
-  padding:10px 12px;
+/* danger 换成柔和绿灰色 */
+.btn.danger{ background:#7aa890; color:#fff; }
+.btn.danger:hover{ background:#5f8b74; }
+
+/* 工具条 */
+.bar{display:flex; gap:10px; align-items:center; padding:0 18px 14px;}
+.bar input[type="date"], .bar input[type="text"], .bar input[type="file"]{
+  background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
 }
 
-/* ===== 搜索行 ===== */
-.search{ display:flex; gap:10px; align-items:center; padding:0 18px 8px; }
-.search input{
-  flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
-}
+/* 搜索行 */
+.search{display:flex; gap:10px; align-items:center; padding:0 18px 8px;}
+.search input{flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;}
+.muted{color:var(--muted); font-size:12px;}
 
-/* ===== 列表区域（桌面默认一列，由容器控制） ===== */
-main{ padding:0 18px 60px; }
-
-/* 卡片外观 */
+/* 列表区域 */
+main{padding:0 18px 60px;}
 .card{
   background:var(--card);
   border:1px solid var(--bd);
@@ -58,70 +52,70 @@ main{ padding:0 18px 60px; }
   box-shadow:0 6px 16px rgba(22,44,22,.05);
 }
 
-/* 卡片头：标题在上，日期在下（统一对齐） */
+/* 卡片头：标题黑字，日期在下方（关键样式） */
 .card-hd{
   display:flex;
   flex-direction:column;
   align-items:flex-start;
-  gap:4px;
+  gap:6px;
   margin-bottom:10px;
 }
 .card-title{
+  font-size:18px;
   font-weight:800;
   color:var(--ink);
-  line-height:1.15;
+  line-height:1.2;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  font-size:18px;
 }
 .card-date{
-  color:var(--muted);
   font-size:12px;
+  color:var(--muted);
 }
-.card-hd .count{ display:none; } /* 若有“1张图”之类计数则隐藏 */
+/* 如果还有“1张图”之类的计数，隐藏 */
+.card-hd .count{ display:none; }
 
-/* 图片区域 */
-.thumbs{ display:block; }
+/* 图片区 */
+.thumbs{display:block;}
 .thumb{
   width:100%;
   height:auto;
-  aspect-ratio:1 / 1;        /* 方图更整齐；要自适应可删掉这行 */
+  aspect-ratio:1/1;
   object-fit:cover;
   border-radius:10px;
   border:1px solid var(--bd);
   cursor:zoom-in;
 }
 
-/* 操作按钮区 */
-.ops{ display:flex; gap:10px; margin-top:10px; }
+/* 操作按钮 */
+.ops{display:flex; gap:10px; margin-top:10px;}
 
 /* 空态 */
-.empty{ color:var(--muted); text-align:center; padding:20px; }
+.empty{color:var(--muted); text-align:center; padding:20px;}
 
-/* ===== 月视图 ===== */
-.month-head{ display:flex; align-items:center; justify-content:space-between; padding:8px 18px; }
-.month-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:12px; padding:0 18px 24px; }
-.cell{ background:var(--card); border:1px solid var(--bd); min-height:110px; border-radius:12px; padding:8px; position:relative; }
-.cell.blank{ background:transparent; border:0; }
-.day{ font-size:12px; color:var(--muted); }
-.badge{ background:var(--prim); color:#fff; border-radius:9px; font-size:10px; padding:2px 6px; margin-left:6px; }
-.mini-wrap{ display:flex; gap:6px; padding-top:6px; flex-wrap:wrap; }
-.mini{ width:36px; height:36px; object-fit:cover; border-radius:6px; border:1px solid var(--bd); cursor:zoom-in; }
+/* 月视图 */
+.month-head{display:flex; align-items:center; justify-content:space-between; padding:8px 18px;}
+.month-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:12px; padding: 0 18px 24px;}
+.cell{background:var(--card); border:1px solid var(--bd); min-height:110px; border-radius:12px; padding:8px; position:relative;}
+.cell.blank{background:transparent; border:0;}
+.day{font-size:12px; color:var(--muted);}
+.badge{background:var(--prim); color:white; border-radius:9px; font-size:10px; padding:2px 6px; margin-left:6px;}
+.mini-wrap{display:flex; gap:6px; padding-top:6px; flex-wrap:wrap;}
+.mini{width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--bd);cursor:zoom-in;}
 
-/* ===== 预览遮罩 ===== */
-.overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:9999; }
-.overlay.show{ display:flex; }
-.overlay .box{ background:#fff; padding:10px; border-radius:10px; max-width:90vw; max-height:90vh; }
-.overlay .box img{ max-width:86vw; max-height:86vh; display:block; border-radius:8px; }
-.overlay .close{ position:absolute; top:20px; right:20px; background:#fff; border:0; border-radius:999px; width:36px; height:36px; cursor:pointer; }
-.album-body{ display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto; }
-.album-body img{ width:320px; height:240px; object-fit:cover; border-radius:10px; }
+/* 预览遮罩 */
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:9999;}
+.overlay.show{display:flex;}
+.overlay .box{background:#fff; padding:10px; border-radius:10px; max-width:90vw; max-height:90vh;}
+.overlay .box img{max-width:86vw; max-height:86vh; display:block; border-radius:8px;}
+.overlay .close{position:absolute; top:20px; right:20px; background:#fff; border:0; border-radius:999px; width:36px;height:36px; cursor:pointer;}
+.album-body{display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto;}
+.album-body img{width:320px; height:240px; object-fit:cover; border-radius:10px;}
 
-/* ===== 页脚 ===== */
-footer{ color:var(--muted); text-align:center; padding:20px; }
+footer{color:var(--muted); text-align:center; padding:20px;}
 
-/* ===== 底部工具条（导出 / 备份 / 导入） ===== */
+/* 底部工具条（导出/备份/导入） */
 .tools-bottom{
   display:flex;
   justify-content:center;
@@ -132,22 +126,19 @@ footer{ color:var(--muted); text-align:center; padding:20px; }
 }
 .tools-bottom .btn{ min-width:90px; text-align:center; }
 
-/* ===== 手机端专属：2 列卡片 + 工具条换行 ===== */
+/* ===== 手机端：2 列卡片 + 工具条换行 ===== */
 @media (max-width: 768px) {
-  /* 工具条允许换行；上传与“记录晚餐”独占一行更好点触 */
-  .bar { flex-wrap:wrap; }
+  .bar{ flex-wrap:wrap; }
   .bar input[type="file"]{ flex:1 1 100%; width:100%; max-width:100%; }
   .bar input[type="file"]::-webkit-file-upload-button{ padding:6px 10px; }
   .bar #record-btn{ flex:1 1 100%; width:100%; text-align:center; white-space:nowrap; }
 
-  /* 列表 2 列网格 */
   #list-wrap{
     display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-template-columns:repeat(2, minmax(0,1fr));
     gap:12px;
   }
-  .card{ margin:0; }                 /* 外距交给网格控制 */
+  .card{ margin:0; }
 
-  /* 手机端标题稍微小一点 */
   .card-title{ font-size:16px; }
 }
