@@ -90,39 +90,52 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     overflow-x: hidden;
   }
 }
-/* === 手机版：列表区域（三列卡片瀑布流），吃掉右侧空白 === */
+/* === 手机端：列表改 3 列瀑布流，每个菜独立卡片，上图下信息 === */
 @media (max-width: 768px) {
-  /* 让相册/列表容器改为三列网格，并去掉右侧 max-width 限制 */
-  .album-body{
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 100vw !important;   /* 原来是 92vw，吃掉右侧空白 */
-    max-height: none;               /* 不限制高度，按内容自增 */
-    overflow: visible;              /* 不出现内部滚动条 */
+  /* 1) 主列表做瀑布流（三列） */
+  main {
+    column-count: 3;          /* 三列 */
+    column-gap: 12px;         /* 列间距 */
   }
 
-  /* 每个卡片（不改结构，直接让子元素占满网格格子） */
-  .album-body > *{
-    width: 100% !important;
-    margin: 0 !important;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+  /* 2) 卡片变成“列内块”并避免跨列拆分 */
+  .card {
+    display: inline-block;    /* 关键：让卡片参与 column 布局 */
+    width: 100%;
+    break-inside: avoid;      /* 避免卡片被截断 */
+    margin: 0 0 12px;         /* 列之间的下间距 */
+    border-radius: 14px;
+    padding: 10px;
   }
 
-  /* 缩略图：正方形裁切，铺满卡片宽度 */
-  .album-body img{
-    width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 1 / 1;       /* iOS/Safari 支持，保证正方形 */
+  /* 3) 图片区域：单图时尽量铺满卡片宽度 */
+  .thumbs {
+    display: block;           /* 一列展示 */
+  }
+  .thumb {
+    width: 100%;
+    height: auto;             /* 让图按比例缩放 */
+    aspect-ratio: 1/1;        /* 想要更整齐可固定比例；不需要可删掉本行 */
     object-fit: cover;
     border-radius: 10px;
   }
 
-  /* 图片下方的文字/日期/查看删除，与图片留点距离 */
-  .album-body > * > :not(img){
-    margin-top: 6px;
-    min-width: 0;              /* 防止文字把卡片撑宽 */
+  /* 4) 卡片头（标题/日期）与操作区 */
+  .card-hd {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 8px 0 6px;
+  }
+  .ops {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  /* 5) 去掉可能造成横向滚动的情况 */
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
