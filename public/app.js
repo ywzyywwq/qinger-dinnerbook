@@ -350,7 +350,8 @@ $('#album').addEventListener('click', (e)=>{
 // init
 $('#date').value = fmt(new Date());
 load();
-<script>
+
+// === 让标题与日期分行的辅助（注意：这里不要有 <script> 标签） ===
 (function () {
   function formatHeader(hd) {
     if (!hd || hd.dataset.fixed === "1") return;
@@ -387,4 +388,3 @@ load();
     ob.observe(main, { childList: true, subtree: true });
   }
 })();
-</script>
