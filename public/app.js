@@ -1,7 +1,6 @@
 // 情儿的食谱（云存版）前端脚本
 // - 原图上传到 Vercel Blob（/api/upload）
-// - 本地 IndexedDB 仅保存缩略图与元数据（几乎不占空间）
-// - 支持不限条目、不限图片（云端容量为准）
+// - 本地 IndexedDB 仅保存缩略图与元数据
 // - 列表视图、月视图、搜索、CSV/JSON 导出/导入、图片查看
 
 // ====== IndexedDB wrapper ======
@@ -68,7 +67,7 @@ async function clearAll() {
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 const fmt = (d) => new Date(d).toISOString().slice(0,10);
-const uuid = () => crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2));
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2)));
 
 function compressToThumb(file, maxW = 360, quality = 0.7) {
   return new Promise((resolve, reject) => {
@@ -92,16 +91,37 @@ function compressToThumb(file, maxW = 360, quality = 0.7) {
   });
 }
 
-async function uploadOriginal(file) {
-  // 通过 Vercel Serverless: /api/upload?filename=... (PUT 原始文件流)
+// ====== Upload（带详细报错） ======
+async function uploadOriginalSafe(file) {
   const endpoint = `/api/upload?filename=${encodeURIComponent(file.name)}`;
-  const res = await fetch(endpoint, { method: 'PUT', body: file, headers: { 'content-type': file.type || 'application/octet-stream' } });
-  if (!res.ok) {
-    const t = await res.text().catch(()=>'');
-    throw new Error('上传失败：' + res.status + ' ' + t);
+  let res;
+  try {
+    res = await fetch(endpoint, {
+      method: 'PUT',
+      body: file,
+      headers: { 'content-type': file.type || 'application/octet-stream' },
+    });
+  } catch (e) {
+    throw new Error('网络异常：' + e.message);
   }
-  const data = await res.json();
-  return data.url; // cloud url
+
+  const text = await res.text().catch(() => '');
+  if (!res.ok) {
+    // 常见原因：BLOB_READ_WRITE_TOKEN 未下发到这个项目 / 项目没连接 Blob
+    console.error('[upload] HTTP', res.status, text);
+    throw new Error(`上传失败：HTTP ${res.status} ${text || ''}`.trim());
+  }
+
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error('上传返回格式异常：' + text);
+  }
+  if (!data?.url) {
+    throw new Error('上传成功但未返回 url：' + text);
+  }
+  return data.url;
 }
 
 // ====== State & UI ======
@@ -118,12 +138,9 @@ async function load() {
 }
 
 function render() {
-  // search filter
   const q = state.query.trim();
   let filtered = state.list;
-  if (q) {
-    filtered = state.list.filter(r => r.name.includes(q) || r.date.includes(q));
-  }
+  if (q) filtered = state.list.filter(r => r.name.includes(q) || r.date.includes(q));
   if (state.view === 'list') renderList(filtered);
   else renderMonth(filtered);
 }
@@ -135,7 +152,7 @@ function renderList(list) {
     wrap.innerHTML = `<div class="empty">还没有记录，先来第一餐吧 🍚</div>`;
     return;
   }
-  // sort by date desc then createdAt desc
+  // 日期倒序，再按创建时间倒序
   list.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || (b.createdAt||0)-(a.createdAt||0));
 
   for (const rec of list) {
@@ -185,18 +202,14 @@ function renderMonth(list) {
   const month = base.getMonth();
   title.textContent = `${year}年 ${String(month+1).padStart(2,'0')}月`;
 
-  // build map date -> records
   const map = {};
-  for (const r of list) {
-    (map[r.date] ||= []).push(r);
-  }
+  for (const r of list) (map[r.date] ||= []).push(r);
 
-  // calendar calculation
-  const firstDay = new Date(year, month, 1).getDay() || 7; // Monday start style optional
+  const firstDay = new Date(year, month, 1).getDay() || 7;
   const days = new Date(year, month+1, 0).getDate();
   grid.innerHTML = '';
-  // create cells 6x7
   const total = Math.ceil((firstDay-1 + days) / 7) * 7;
+
   for (let i=0;i<total;i++){
     const dayNum = i - (firstDay-1) + 1;
     const cell = document.createElement('div');
@@ -236,7 +249,6 @@ function closeLightbox(){
   overlay.classList.remove('show');
   overlay.querySelector('img').src = '';
 }
-
 function openAlbum(rec){
   const overlay = $('#album');
   const box = overlay.querySelector('.album-body');
@@ -259,7 +271,6 @@ async function exportCSV() {
   a.download = 'qinger_recipes.csv';
   a.click();
 }
-
 async function backupJSON() {
   const list = await getAll();
   const blob = new Blob([JSON.stringify(list)], { type: 'application/json' });
@@ -268,7 +279,6 @@ async function backupJSON() {
   a.download = 'qinger_recipes_backup.json';
   a.click();
 }
-
 async function importJSON(file) {
   const txt = await file.text();
   const list = JSON.parse(txt);
@@ -280,108 +290,107 @@ async function importJSON(file) {
   await load();
 }
 
-// ====== Handlers ======
-$('#toggle-view').addEventListener('click', () => {
+// ====== Handlers（除“记录晚餐”外的绑定照旧） ======
+$('#toggle-view')?.addEventListener('click', () => {
   state.view = (state.view==='list'?'month':'list');
   render();
 });
-
-$('#prev-month').addEventListener('click', () => {
+$('#prev-month')?.addEventListener('click', () => {
   const d = state.month; d.setMonth(d.getMonth()-1); render();
 });
-$('#next-month').addEventListener('click', () => {
+$('#next-month')?.addEventListener('click', () => {
   const d = state.month; d.setMonth(d.getMonth()+1); render();
 });
-
-$('#search').addEventListener('input', (e)=>{
+$('#search')?.addEventListener('input', (e)=>{
   state.query = e.target.value;
   render();
 });
-
-$('#export-csv').addEventListener('click', exportCSV);
-$('#backup-json').addEventListener('click', backupJSON);
-$('#import-json').addEventListener('change', (e)=>{
+$('#export-csv')?.addEventListener('click', exportCSV);
+$('#backup-json')?.addEventListener('click', backupJSON);
+$('#import-json')?.addEventListener('change', (e)=>{
   const f = e.target.files[0]; if (f) importJSON(f);
   e.target.value = '';
 });
-
-$('#record-btn').addEventListener('click', async ()=>{
-  const date = $('#date').value || fmt(new Date());
-  const name = ($('#name').value || '').trim();
-  const file = $('#file').files[0];
-  if (!name) return alert('请输入菜名');
-  if (!file) return alert('请选择照片');
-
-  try {
-    $('#record-btn').disabled = true;
-    $('#record-btn').textContent = '上传中…';
-    const [thumb, url] = await Promise.all([
-      compressToThumb(file, 420, 0.72),
-      uploadOriginal(file)
-    ]);
-    const rec = { id: uuid(), date, name, photos: [{ url, thumb }], createdAt: Date.now() };
-    await putRecord(rec);
-    $('#name').value = '';
-    $('#file').value = '';
-    await load();
-    alert('已记录 ✅');
-  } catch (err) {
-    console.error(err);
-    alert('失败：' + err.message);
-  } finally {
-    $('#record-btn').disabled = false;
-    $('#record-btn').textContent = '记录晚餐';
-  }
-});
-
-$('#clear-all').addEventListener('click', async ()=>{
+$('#clear-all')?.addEventListener('click', async ()=>{
   if (!confirm('确定清空全部记录吗？（仅清本地缩略图与元数据，云端原图不动）')) return;
   await clearAll();
   await load();
 });
-
-$('#lightbox').addEventListener('click', (e)=>{
+$('#lightbox')?.addEventListener('click', (e)=>{
   if (e.target.id==='lightbox' || e.target.classList.contains('close')) closeLightbox();
 });
-$('#album').addEventListener('click', (e)=>{
+$('#album')?.addEventListener('click', (e)=>{
   if (e.target.id==='album' || e.target.classList.contains('close')) closeAlbum();
 });
 
-// init
+// ====== “记录晚餐”稳健绑定（防早绑定/防重复） ======
+function bindRecordOnce() {
+  const btn = document.querySelector('#record-btn');
+  if (!btn) { console.warn('[record] #record-btn not found'); return; }
+  if (btn.dataset.bound === '1') return;
+  btn.dataset.bound = '1';
+
+  btn.addEventListener('click', async () => {
+    try {
+      const date = (document.querySelector('#date')?.value) || fmt(new Date());
+      const name = (document.querySelector('#name')?.value || '').trim();
+      const file = document.querySelector('#file')?.files?.[0] || null;
+
+      if (!name) { alert('请输入菜名'); return; }
+      if (!file) { alert('请选择照片'); return; }
+
+      btn.disabled = true;
+      btn.textContent = '上传中…';
+
+      console.log('[record] start', { date, name, file: file?.name });
+
+      const [thumb, url] = await Promise.all([
+        compressToThumb(file, 420, 0.72),
+        uploadOriginalSafe(file),
+      ]);
+
+      console.log('[record] upload ok:', url);
+
+      const rec = { id: uuid(), date, name, photos: [{ url, thumb }], createdAt: Date.now() };
+      await putRecord(rec);
+
+      document.querySelector('#name').value = '';
+      document.querySelector('#file').value = '';
+      await load();
+      alert('已记录 ✅');
+    } catch (err) {
+      console.error('[record] failed:', err);
+      alert('失败：' + (err?.message || err));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '记录晚餐';
+    }
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindRecordOnce);
+} else {
+  bindRecordOnce();
+}
+
+// ====== 页面初始化 ======
 $('#date').value = fmt(new Date());
 load();
 
-// === 让标题与日期分行的辅助（注意：这里不要有 <script> 标签） ===
+// ====== 标题和日期分行的小工具（不要有 <script> 标签） ======
 (function () {
   function formatHeader(hd) {
     if (!hd || hd.dataset.fixed === "1") return;
-
-    // 取出原始文本，例如：“萝卜干炒毛豆 2025-09-03 · 1张图”
     const raw = hd.textContent.trim().replace(/\s+/g, ' ');
-
-    // 匹配日期
     const m = raw.match(/(\d{4}-\d{2}-\d{2})/);
     if (!m) return;
-
     const date = m[1];
     const title = raw.slice(0, m.index).trim();
-
-    // 重写为：标题一行 + 日期一行
-    hd.innerHTML = `
-      <span class="title">${title}</span>
-      <span class="date">${date}</span>
-    `;
+    hd.innerHTML = `<span class="title">${title}</span><span class="date">${date}</span>`;
     hd.dataset.fixed = "1";
   }
-
-  function sweep() {
-    document.querySelectorAll('.card-hd').forEach(formatHeader);
-  }
-
-  // 初始整理一次
+  function sweep() { document.querySelectorAll('.card-hd').forEach(formatHeader); }
   sweep();
-
-  // 监听 main 内部变化（列表刷新、上传后重渲染等）
   const main = document.querySelector('main');
   if (main) {
     const ob = new MutationObserver(() => sweep());
