@@ -22,12 +22,7 @@
     <input id="file" type="file" accept="image/*">
     <button id="record-btn" class="btn">记录晚餐</button>
   </div>
-  <div class="search">
-    <input id="search" type="search" placeholder="搜索菜名或日期（例：番茄 / 2025-09-03）">
-    <button id="export-csv" class="btn ghost">导出 CSV</button>
-    <button id="backup-json" class="btn ghost">备份 JSON</button>
-    <label class="btn ghost" for="import-json">导入 JSON</label>
-    <input id="import-json" type="file" accept="application/json" style="display:none;">
+  
     <button id="clear-all" class="btn danger">清空全部</button>
   </div>
 
@@ -56,8 +51,16 @@
     </div>
   </div>
 
-  <footer>❤ 保存于本机 · 原图存云端 · 设计：淡绿日式 · 为情定制</footer>
-
+  <footer>
+  <p class="muted">© 2025 情儿的食谱</p>
+  
+  <!-- 工具按钮放在最下面 -->
+  <div class="tools-bottom">
+    <button class="btn ghost">导出 CSV</button>
+    <button class="btn ghost">备份 JSON</button>
+    <button class="btn ghost">导入 JSON</button>
+  </div>
+</footer>
   <script>
     // 列表/月视图切换
     const btn = document.getElementById('toggle-view');
