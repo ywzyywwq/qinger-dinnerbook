@@ -17,58 +17,31 @@ body{
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
 }
-html, body { max-width:100%; overflow-x:hidden; }
 
-/* 顶部与按钮 */
-header{ display:flex; align-items:center; gap:12px; padding:14px 18px; }
+/* 顶部 */
+header{
+  display:flex; align-items:center; gap:12px; padding:14px 18px;
+}
 header img.avatar{width:28px;height:28px;border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1);}
 header .title{font-weight:700;}
-
-.btn{
-  border:0;
-  background:var(--prim);
-  color:var(--prim-ink);
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-}
-.btn.ghost{
-  background:#eef4ef;
-  color:var(--ink);
-  border:1px solid var(--bd);
-}
-
-/* danger 换成柑橘橙 */
-.btn.danger{
-  background:#ff9f45;   /* 明亮橙色 */
-  color:#fff;
-}
-.btn.danger:hover{
-  background:#e68a2e;   /* hover 深一点 */
-}
+.btn{border:0; background:var(--prim); color:var(--prim-ink); padding:10px 14px; border-radius:10px; cursor:pointer;}
+.btn.ghost{background:#eef4ef;color:var(--ink); border:1px solid var(--bd);}
+.btn.danger{background:#de6a6a;}
+.muted{color:var(--muted); font-size:12px;}
 
 /* 工具条 */
 .bar{display:flex; gap:10px; align-items:center; padding:0 18px 14px;}
 .bar input[type="date"], .bar input[type="text"], .bar input[type="file"]{
-  background:var(--card);
-  border:1px solid var(--bd);
-  border-radius:10px;
-  padding:10px 12px;
+  background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
 }
 
 /* 搜索行 */
 .search{display:flex; gap:10px; align-items:center; padding:0 18px 8px;}
-.search input{
-  flex:1;
-  background:var(--card);
-  border:1px solid var(--bd);
-  border-radius:10px;
-  padding:10px 12px;
-}
-.muted{color:var(--muted); font-size:12px;}
+.search input{flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;}
 
 /* 列表区域 */
 main{padding:0 18px 60px;}
+/* 卡片的“外观”保持不变，结构由 JS 渲染 */
 .card{
   background:var(--card);
   border:1px solid var(--bd);
@@ -77,35 +50,31 @@ main{padding:0 18px 60px;}
   box-shadow:0 6px 16px rgba(22,44,22,.05);
 }
 
-/* 卡片头：标题黑字，日期在下方 */
+/* 卡片头：标题黑字、日期放下面；（如果你的 JS 里有计数 .count，把它隐藏） */
 .card-hd{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:6px;
+  display:block;               /* 纵向堆叠 */
   margin-bottom:10px;
 }
-.card-title{
+.card-hd .title{
   font-size:18px;
   font-weight:800;
   color:var(--ink);
   line-height:1.2;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  margin:0 0 6px 0;            /* 日期放下面 */
+  word-break:break-word;       /* 长标题不溢出 */
 }
-.card-date{
+.card-hd .date{
   font-size:12px;
   color:var(--muted);
 }
-.card-hd .count{ display:none; }
+.card-hd .count{ display:none; }  /* “1张图”等隐藏 */
 
 /* 图片区 */
 .thumbs{display:block;}
 .thumb{
   width:100%;
   height:auto;
-  aspect-ratio:1/1;
+  aspect-ratio: 1 / 1;         /* 更整齐 */
   object-fit:cover;
   border-radius:10px;
   border:1px solid var(--bd);
@@ -118,7 +87,7 @@ main{padding:0 18px 60px;}
 /* 空态 */
 .empty{color:var(--muted); text-align:center; padding:20px;}
 
-/* 月视图 */
+/* 月视图（保持原样式） */
 .month-head{display:flex; align-items:center; justify-content:space-between; padding:8px 18px;}
 .month-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:12px; padding: 0 18px 24px;}
 .cell{background:var(--card); border:1px solid var(--bd); min-height:110px; border-radius:12px; padding:8px; position:relative;}
@@ -139,7 +108,36 @@ main{padding:0 18px 60px;}
 
 footer{color:var(--muted); text-align:center; padding:20px;}
 
-/* 底部工具条 */
+/* ===== 手机端专属：2 列卡片 + 工具条换行 ===== */
+@media (max-width: 768px) {
+
+  /* 工具条允许换行；上传与“记录晚餐”不再把屏幕挤炸 */
+  .bar { flex-wrap: wrap; }
+  .bar input[type="file"] { flex:1 1 100%; width:100%; max-width:100%; }
+  .bar input[type="file"]::-webkit-file-upload-button { padding:6px 10px; }
+  .bar #record-btn { flex:1 1 100%; width:100%; text-align:center; white-space:nowrap; }
+
+  /* 列表两列网格（你要的每行 2 个卡片） */
+  #list-wrap{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:12px;
+  }
+  /* 网格里的卡片外距由网格控制，这里清掉外边距 */
+  .card{ margin:0; }
+
+  /* 标题一行（太长自动换行，不撑破布局），日期在下 */
+  .card-hd .title{
+    font-size:16px;
+    line-height:1.25;
+    margin:0 0 6px 0;
+  }
+}
+
+/* ===== 兜底：禁止横向滚动 ===== */
+html, body { max-width:100%; overflow-x:hidden; }
+
+/* ===== 底部工具条（导出/备份/导入） ===== */
 .tools-bottom{
   display:flex;
   justify-content:center;
@@ -148,21 +146,7 @@ footer{color:var(--muted); text-align:center; padding:20px;}
   background:var(--bg);
   border-top:1px solid var(--bd);
 }
-.tools-bottom .btn{ min-width:90px; text-align:center; }
-
-/* 手机端：2 列卡片 + 工具条换行 */
-@media (max-width: 768px) {
-  .bar{ flex-wrap:wrap; }
-  .bar input[type="file"]{ flex:1 1 100%; width:100%; max-width:100%; }
-  .bar input[type="file"]::-webkit-file-upload-button{ padding:6px 10px; }
-  .bar #record-btn{ flex:1 1 100%; width:100%; text-align:center; white-space:nowrap; }
-
-  #list-wrap{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0,1fr));
-    gap:12px;
-  }
-  .card{ margin:0; }
-
-  .card-title{ font-size:16px; }
+.tools-bottom .btn{
+  min-width:90px;
+  text-align:center;
 }
