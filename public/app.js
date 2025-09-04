@@ -3,11 +3,10 @@
 // - 本地 IndexedDB 仅保存缩略图与元数据
 // - 列表视图、月视图、搜索、CSV/JSON 导出/导入、图片查看
 
-// ====== IndexedDB wrapper ======
+/* ================= IndexedDB ================= */
 const DB_NAME = 'qinger_recipes_db_v2';
-const STORE = 'records';
+const STORE   = 'records';
 let dbP;
-
 function openDB() {
   if (dbP) return dbP;
   dbP = new Promise((resolve, reject) => {
@@ -15,24 +14,23 @@ function openDB() {
     req.onupgradeneeded = () => {
       const db = req.result;
       if (!db.objectStoreNames.contains(STORE)) {
-        const os = db.createObjectStore(STORE, { keyPath: 'id' }); // id = uuid
+        const os = db.createObjectStore(STORE, { keyPath: 'id' });
         os.createIndex('by_date', 'date');
         os.createIndex('by_name', 'name');
       }
     };
     req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onerror   = () => reject(req.error);
   });
   return dbP;
 }
-
 async function getAll() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, 'readonly');
     const req = tx.objectStore(STORE).getAll();
     req.onsuccess = () => resolve(req.result || []);
-    req.onerror = () => reject(req.error);
+    req.onerror   = () => reject(req.error);
   });
 }
 async function putRecord(rec) {
@@ -41,7 +39,7 @@ async function putRecord(rec) {
     const tx = db.transaction(STORE, 'readwrite');
     tx.objectStore(STORE).put(rec);
     tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.onerror    = () => reject(tx.error);
   });
 }
 async function deleteRecord(id) {
@@ -50,7 +48,7 @@ async function deleteRecord(id) {
     const tx = db.transaction(STORE, 'readwrite');
     tx.objectStore(STORE).delete(id);
     tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.onerror    = () => reject(tx.error);
   });
 }
 async function clearAll() {
@@ -59,15 +57,15 @@ async function clearAll() {
     const tx = db.transaction(STORE, 'readwrite');
     tx.objectStore(STORE).clear();
     tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.onerror    = () => reject(tx.error);
   });
 }
 
-// ====== Utils ======
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-const fmt = (d) => new Date(d).toISOString().slice(0,10);
-const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2)));
+/* ================= Utils ================= */
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const fmt  = (d) => new Date(d).toISOString().slice(0, 10);
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)));
 
 function compressToThumb(file, maxW = 360, quality = 0.7) {
   return new Promise((resolve, reject) => {
@@ -78,20 +76,18 @@ function compressToThumb(file, maxW = 360, quality = 0.7) {
       const h = Math.max(1, Math.round(img.height * scale));
       const cv = document.createElement('canvas');
       cv.width = w; cv.height = h;
-      const ctx = cv.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      const dataUrl = cv.toDataURL('image/jpeg', quality);
-      resolve(dataUrl);
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(cv.toDataURL('image/jpeg', quality));
     };
     img.onerror = reject;
     const fr = new FileReader();
-    fr.onload = () => { img.src = fr.result; };
+    fr.onload  = () => (img.src = fr.result);
     fr.onerror = reject;
     fr.readAsDataURL(file);
   });
 }
 
-// ====== Upload（带详细报错） ======
+/* ================= Upload（含详细报错） ================= */
 async function uploadOriginalSafe(file) {
   const endpoint = `/api/upload?filename=${encodeURIComponent(file.name)}`;
   let res;
@@ -104,61 +100,58 @@ async function uploadOriginalSafe(file) {
   } catch (e) {
     throw new Error('网络异常：' + e.message);
   }
-
   const text = await res.text().catch(() => '');
   if (!res.ok) {
-    // 常见原因：BLOB_READ_WRITE_TOKEN 未下发到这个项目 / 项目没连接 Blob
     console.error('[upload] HTTP', res.status, text);
     throw new Error(`上传失败：HTTP ${res.status} ${text || ''}`.trim());
   }
-
   let data;
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    throw new Error('上传返回格式异常：' + text);
-  }
-  if (!data?.url) {
-    throw new Error('上传成功但未返回 url：' + text);
-  }
+  try { data = text ? JSON.parse(text) : {}; } catch { throw new Error('上传返回格式异常：' + text); }
+  if (!data?.url) throw new Error('上传成功但未返回 url：' + text);
   return data.url;
 }
 
-// ====== State & UI ======
-const state = {
-  list: [],
-  view: 'list', // 'list' | 'month'
-  month: new Date(),
-  query: ''
-};
+/* ================= State & DOM refs ================= */
+const state = { list: [], view: 'list', month: new Date(), query: '' };
 
+const listModeEl  = document.getElementById('list-mode');
+const monthModeEl = document.getElementById('month-mode');
+const toggleBtn   = document.getElementById('toggle-view');
+
+function applyView() {
+  if (state.view === 'list') {
+    if (listModeEl)  listModeEl.style.display  = 'block';
+    if (monthModeEl) monthModeEl.style.display = 'none';
+    if (toggleBtn)   toggleBtn.textContent = '月视图';
+  } else {
+    if (listModeEl)  listModeEl.style.display  = 'none';
+    if (monthModeEl) monthModeEl.style.display = 'block';
+    if (toggleBtn)   toggleBtn.textContent = '列表';
+  }
+}
+
+/* ================= Render ================= */
 async function load() {
   state.list = await getAll();
   render();
 }
-
 function render() {
+  applyView();
   const q = state.query.trim();
   let filtered = state.list;
   if (q) filtered = state.list.filter(r => r.name.includes(q) || r.date.includes(q));
   if (state.view === 'list') renderList(filtered);
   else renderMonth(filtered);
 }
-
 function renderList(list) {
   const wrap = $('#list-wrap');
   wrap.innerHTML = '';
-  if (!list.length) {
-    wrap.innerHTML = `<div class="empty">还没有记录，先来第一餐吧 🍚</div>`;
-    return;
-  }
-  // 日期倒序，再按创建时间倒序
+  if (!list.length) { wrap.innerHTML = `<div class="empty">还没有记录，先来第一餐吧 🍚</div>`; return; }
+
   list.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || (b.createdAt||0)-(a.createdAt||0));
 
   for (const rec of list) {
-    const thumbs = rec.photos.map(p=>`
-      <img class="thumb" src="${p.thumb}" data-url="${p.url}" title="点我查看大图">
-    `).join('');
+    const thumbs = rec.photos.map(p=>`<img class="thumb" src="${p.thumb}" data-url="${p.url}" title="点我查看大图">`).join('');
     const el = document.createElement('div');
     el.className = 'card';
     el.innerHTML = `
@@ -169,53 +162,47 @@ function renderList(list) {
       <div class="thumbs">${thumbs}</div>
       <div class="ops">
         <button class="btn ghost" data-act="view" data-id="${rec.id}">查看</button>
-        <button class="btn danger" data-act="del" data-id="${rec.id}">删除</button>
-      </div>
-    `;
+        <button class="btn danger" data-act="del"  data-id="${rec.id}">删除</button>
+      </div>`;
     wrap.appendChild(el);
   }
 
-  wrap.querySelectorAll('.thumb').forEach(img => {
-    img.addEventListener('click', () => openLightbox(img.dataset.url));
-  });
-  wrap.querySelectorAll('.btn[data-act="del"]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
+  wrap.querySelectorAll('.thumb').forEach(img => img.addEventListener('click', () => openLightbox(img.dataset.url)));
+  wrap.querySelectorAll('.btn[data-act="del"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
       if (!confirm('确定删除这道菜吗？')) return;
       await deleteRecord(btn.dataset.id);
       await load();
     });
   });
-  wrap.querySelectorAll('.btn[data-act="view"]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const rec = state.list.find(r=>r.id===btn.dataset.id);
-      if (!rec) return;
-      openAlbum(rec);
+  wrap.querySelectorAll('.btn[data-act="view"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rec = state.list.find(r => r.id === btn.dataset.id);
+      if (rec) openAlbum(rec);
     });
   });
 }
-
 function renderMonth(list) {
-  const grid = $('#month-grid');
+  const grid  = $('#month-grid');
   const title = $('#month-title');
-  const base = new Date(state.month.getFullYear(), state.month.getMonth(), 1);
-  const year = base.getFullYear();
-  const month = base.getMonth();
-  title.textContent = `${year}年 ${String(month+1).padStart(2,'0')}月`;
+  const base  = new Date(state.month.getFullYear(), state.month.getMonth(), 1);
+  const y = base.getFullYear(), m = base.getMonth();
+  if (title) title.textContent = `${y}年 ${String(m+1).padStart(2,'0')}月`;
 
   const map = {};
   for (const r of list) (map[r.date] ||= []).push(r);
 
-  const firstDay = new Date(year, month, 1).getDay() || 7;
-  const days = new Date(year, month+1, 0).getDate();
-  grid.innerHTML = '';
+  const firstDay = new Date(y, m, 1).getDay() || 7;
+  const days = new Date(y, m+1, 0).getDate();
+  if (grid) grid.innerHTML = '';
   const total = Math.ceil((firstDay-1 + days) / 7) * 7;
 
-  for (let i=0;i<total;i++){
+  for (let i=0; i<total; i++){
     const dayNum = i - (firstDay-1) + 1;
     const cell = document.createElement('div');
     cell.className = 'cell';
     if (dayNum>=1 && dayNum<=days) {
-      const date = `${year}-${String(month+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
+      const date = `${y}-${String(m+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
       const recs = map[date] || [];
       const thumbs = [];
       for (const rec of recs) {
@@ -227,173 +214,111 @@ function renderMonth(list) {
       }
       cell.innerHTML = `
         <div class="day">${dayNum}${recs.length?`<span class="badge">${recs.length}</span>`:''}</div>
-        <div class="mini-wrap">${thumbs.join('')}</div>
-      `;
+        <div class="mini-wrap">${thumbs.join('')}</div>`;
     } else {
       cell.classList.add('blank');
     }
-    grid.appendChild(cell);
+    grid && grid.appendChild(cell);
   }
-  grid.querySelectorAll('.mini').forEach(img=>{
-    img.addEventListener('click', ()=> openLightbox(img.dataset.url));
-  });
+  grid?.querySelectorAll('.mini').forEach(img => img.addEventListener('click', ()=> openLightbox(img.dataset.url)));
 }
 
-function openLightbox(url){
-  const overlay = $('#lightbox');
-  overlay.querySelector('img').src = url;
-  overlay.classList.add('show');
-}
-function closeLightbox(){
-  const overlay = $('#lightbox');
-  overlay.classList.remove('show');
-  overlay.querySelector('img').src = '';
-}
-function openAlbum(rec){
-  const overlay = $('#album');
-  const box = overlay.querySelector('.album-body');
-  box.innerHTML = rec.photos.map(p=>`<img src="${p.url}">`).join('');
-  overlay.classList.add('show');
-}
+/* ================= Overlays ================= */
+function openLightbox(url){ const o = $('#lightbox'); o.querySelector('img').src = url; o.classList.add('show'); }
+function closeLightbox(){ const o = $('#lightbox'); o.classList.remove('show'); o.querySelector('img').src=''; }
+function openAlbum(rec){ const o = $('#album'); const b = o.querySelector('.album-body'); b.innerHTML = rec.photos.map(p=>`<img src="${p.url}">`).join(''); o.classList.add('show'); }
 function closeAlbum(){ $('#album').classList.remove('show'); }
 
-// ====== Export / Import ======
+/* ================= Export / Import ================= */
 async function exportCSV() {
   const list = await getAll();
   const rows = [['date','name','photo_urls']];
-  for (const r of list) {
-    rows.push([r.date, r.name, r.photos.map(p=>p.url).join('|')]);
-  }
-  const csv = rows.map(row => row.map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  for (const r of list) rows.push([r.date, r.name, r.photos.map(p=>p.url).join('|')]);
+  const csv = rows.map(row => row.map(v=>`"${(v??'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'qinger_recipes.csv';
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'qinger_recipes.csv' });
   a.click();
 }
 async function backupJSON() {
   const list = await getAll();
   const blob = new Blob([JSON.stringify(list)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'qinger_recipes_backup.json';
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'qinger_recipes_backup.json' });
   a.click();
 }
 async function importJSON(file) {
   const txt = await file.text();
   const list = JSON.parse(txt);
   if (!Array.isArray(list)) return alert('格式不对');
-  for (const r of list) {
-    if (!r.id) r.id = uuid();
-    await putRecord(r);
-  }
+  for (const r of list) { if (!r.id) r.id = uuid(); await putRecord(r); }
   await load();
 }
 
-// ====== Handlers（除“记录晚餐”外的绑定照旧） ======
+/* ================= Handlers ================= */
 $('#toggle-view')?.addEventListener('click', () => {
-  state.view = (state.view==='list'?'month':'list');
+  state.view = (state.view === 'list' ? 'month' : 'list');
+  applyView();
   render();
 });
-$('#prev-month')?.addEventListener('click', () => {
-  const d = state.month; d.setMonth(d.getMonth()-1); render();
-});
-$('#next-month')?.addEventListener('click', () => {
-  const d = state.month; d.setMonth(d.getMonth()+1); render();
-});
-$('#search')?.addEventListener('input', (e)=>{
-  state.query = e.target.value;
-  render();
-});
+$('#prev-month')?.addEventListener('click', () => { const d = state.month; d.setMonth(d.getMonth()-1); render(); });
+$('#next-month')?.addEventListener('click', () => { const d = state.month; d.setMonth(d.getMonth()+1); render(); });
+$('#search')?.addEventListener('input', (e)=>{ state.query = e.target.value; render(); });
 $('#export-csv')?.addEventListener('click', exportCSV);
 $('#backup-json')?.addEventListener('click', backupJSON);
-$('#import-json')?.addEventListener('change', (e)=>{
-  const f = e.target.files[0]; if (f) importJSON(f);
-  e.target.value = '';
-});
-$('#clear-all')?.addEventListener('click', async ()=>{
-  if (!confirm('确定清空全部记录吗？（仅清本地缩略图与元数据，云端原图不动）')) return;
-  await clearAll();
-  await load();
-});
-$('#lightbox')?.addEventListener('click', (e)=>{
-  if (e.target.id==='lightbox' || e.target.classList.contains('close')) closeLightbox();
-});
-$('#album')?.addEventListener('click', (e)=>{
-  if (e.target.id==='album' || e.target.classList.contains('close')) closeAlbum();
-});
+$('#import-json')?.addEventListener('change', (e)=>{ const f = e.target.files[0]; if (f) importJSON(f); e.target.value=''; });
+$('#clear-all')?.addEventListener('click', async ()=>{ if (!confirm('确定清空全部记录吗？（仅清本地缩略图与元数据，云端原图不动）')) return; await clearAll(); await load(); });
+$('#lightbox')?.addEventListener('click', (e)=>{ if (e.target.id==='lightbox' || e.target.classList.contains('close')) closeLightbox(); });
+$('#album')?.addEventListener('click',   (e)=>{ if (e.target.id==='album'    || e.target.classList.contains('close')) closeAlbum(); });
 
-// ====== “记录晚餐”稳健绑定（防早绑定/防重复） ======
+/* ===== “记录晚餐”防重复稳健绑定 ===== */
 function bindRecordOnce() {
-  const btn = document.querySelector('#record-btn');
-  if (!btn) { console.warn('[record] #record-btn not found'); return; }
+  const btn = document.getElementById('record-btn');
+  if (!btn) return;
   if (btn.dataset.bound === '1') return;
   btn.dataset.bound = '1';
-
   btn.addEventListener('click', async () => {
     try {
-      const date = (document.querySelector('#date')?.value) || fmt(new Date());
-      const name = (document.querySelector('#name')?.value || '').trim();
-      const file = document.querySelector('#file')?.files?.[0] || null;
-
+      const date = ($('#date')?.value) || fmt(new Date());
+      const name = ($('#name')?.value || '').trim();
+      const file = $('#file')?.files?.[0] || null;
       if (!name) { alert('请输入菜名'); return; }
       if (!file) { alert('请选择照片'); return; }
 
-      btn.disabled = true;
-      btn.textContent = '上传中…';
-
-      console.log('[record] start', { date, name, file: file?.name });
-
-      const [thumb, url] = await Promise.all([
-        compressToThumb(file, 420, 0.72),
-        uploadOriginalSafe(file),
-      ]);
-
-      console.log('[record] upload ok:', url);
-
+      btn.disabled = true; btn.textContent = '上传中…';
+      const [thumb, url] = await Promise.all([compressToThumb(file, 420, 0.72), uploadOriginalSafe(file)]);
       const rec = { id: uuid(), date, name, photos: [{ url, thumb }], createdAt: Date.now() };
       await putRecord(rec);
-
-      document.querySelector('#name').value = '';
-      document.querySelector('#file').value = '';
+      $('#name').value = ''; $('#file').value = '';
       await load();
       alert('已记录 ✅');
     } catch (err) {
       console.error('[record] failed:', err);
       alert('失败：' + (err?.message || err));
     } finally {
-      btn.disabled = false;
-      btn.textContent = '记录晚餐';
+      btn.disabled = false; btn.textContent = '记录晚餐';
     }
   });
 }
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bindRecordOnce);
-} else {
-  bindRecordOnce();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindRecordOnce);
+else bindRecordOnce();
 
-// ====== 页面初始化 ======
+/* ================= Init ================= */
 $('#date').value = fmt(new Date());
 load();
 
-// ====== 标题和日期分行的小工具（不要有 <script> 标签） ======
+/* ========== 卡片标题与日期分行（纯 JS） ========== */
 (function () {
   function formatHeader(hd) {
-    if (!hd || hd.dataset.fixed === "1") return;
+    if (!hd || hd.dataset.fixed === '1') return;
     const raw = hd.textContent.trim().replace(/\s+/g, ' ');
     const m = raw.match(/(\d{4}-\d{2}-\d{2})/);
     if (!m) return;
-    const date = m[1];
+    const date  = m[1];
     const title = raw.slice(0, m.index).trim();
     hd.innerHTML = `<span class="title">${title}</span><span class="date">${date}</span>`;
-    hd.dataset.fixed = "1";
+    hd.dataset.fixed = '1';
   }
-  function sweep() { document.querySelectorAll('.card-hd').forEach(formatHeader); }
+  function sweep(){ document.querySelectorAll('.card-hd').forEach(formatHeader); }
   sweep();
   const main = document.querySelector('main');
-  if (main) {
-    const ob = new MutationObserver(() => sweep());
-    ob.observe(main, { childList: true, subtree: true });
-  }
+  if (main) new MutationObserver(sweep).observe(main, { childList: true, subtree: true });
 })();
