@@ -90,85 +90,53 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     overflow-x: hidden;
   }
 }
-/* === 手机端：列表改 3 列瀑布流，每个菜独立卡片，上图下信息 === */
+/* === 手机端：3列瀑布流，卡片对齐加强版 === */
 @media (max-width: 768px) {
-  /* 1) 主列表做瀑布流（三列） */
-  main {
-    column-count: 3;          /* 三列 */
-    column-gap: 12px;         /* 列间距 */
+  /* 工具条保持换行 */
+  .bar { flex-wrap: wrap; }
+  .bar input[type="file"] { flex: 1 1 100%; width: 100%; max-width: 100%; }
+  .bar input[type="file"]::-webkit-file-upload-button { padding: 6px 10px; }
+  .bar input[type="file"] ~ button,
+  .bar input[type="file"] ~ a {
+    flex: 1 1 100%; width: 100%; margin-left: 0; margin-top: 8px; white-space: nowrap; text-align: center;
   }
 
-  /* 2) 卡片变成“列内块”并避免跨列拆分 */
+  /* 关键：列间距与左右内边距都用 12px，让多数 iPhone 宽度下列宽变成整数像素 */
+  main {
+    column-count: 3;
+    column-gap: 12px;        /* 列间距 */
+    padding: 0 12px 60px;    /* 左右内边距 = 12px */
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* 卡片自己不再占左右外边距，只保留下间距，避免影响列宽计算 */
   .card {
-    display: inline-block;    /* 关键：让卡片参与 column 布局 */
+    display: inline-block;
     width: 100%;
-    break-inside: avoid;      /* 避免卡片被截断 */
-    margin: 0 0 12px;         /* 列之间的下间距 */
+    break-inside: avoid;
+    margin: 0 0 12px;        /* 只要下间距 */
     border-radius: 14px;
     padding: 10px;
+    /* 下面两行进一步减少 iOS 上的“毛边感”，可留可去 */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
-  /* 3) 图片区域：单图时尽量铺满卡片宽度 */
-  .thumbs {
-    display: block;           /* 一列展示 */
-  }
+  .thumbs { display: block; }
   .thumb {
     width: 100%;
-    height: auto;             /* 让图按比例缩放 */
-    aspect-ratio: 1/1;        /* 想要更整齐可固定比例；不需要可删掉本行 */
+    height: auto;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 10px;
   }
 
-  /* 4) 卡片头（标题/日期）与操作区 */
   .card-hd {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     margin: 8px 0 6px;
   }
-  .ops {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-  }
-
-  /* 5) 去掉可能造成横向滚动的情况 */
-  html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  .ops { display: flex; gap: 8px; margin-top: 8px; }
 }
-/* —— 防止影响月视图：main 里有 .month-grid 时，不做多列 —— */
-@media (max-width: 768px) {
-  main:has(.month-grid) {
-    column-count: 1 !important;
-    column-gap: 0 !important;
-  }
-}
-
-/* —— 窄屏（小于 420px）自动降为 2 列 —— */
-@media (max-width: 420px) {
-  main {
-    column-count: 2;
-  }
-}
-@media (max-width: 768px) {
-  /* 调整列间距与左右边距，避免四舍五入带来的“看起来不齐” */
-  main {
-    column-count: 3;
-    column-gap: 16px;     /* 列间距改大一点 */
-    padding: 0 8px 60px;  /* 左右改小一点（和上面的 16 错开）*/
-  }
-
-  .card {
-    display: inline-block;
-    width: 100%;
-    break-inside: avoid;
-    margin: 0 0 16px;     /* 仅保留下间距；确保列宽不被左右 margin 影响 */
-    border-radius: 14px;
-    padding: 10px;
-  }
-}
-main { column-gap: 18px; padding: 0 6px 60px; }
-.card { margin: 0 0 18px; }
