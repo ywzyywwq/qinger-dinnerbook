@@ -6,12 +6,6 @@
   --prim: #6aa67a;
   --prim-ink:#ffffff;
   --bd:#d7e3d8;
-
-  /* Danger 颜色变量 */
-  --danger:       #d9a066;   /* 柔和橙色 */
-  --danger-hover: #c88532;   /* hover 时更深 */
-  --danger-ink:   #ffffff;
-  --danger-ring:  rgba(217,160,102,.35);
 }
 
 /* 基础 */
@@ -30,27 +24,47 @@ header{ display:flex; align-items:center; gap:12px; padding:14px 18px; }
 header img.avatar{width:28px;height:28px;border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1);}
 header .title{font-weight:700;}
 
-.btn{border:0; background:var(--prim); color:var(--prim-ink); padding:10px 14px; border-radius:10px; cursor:pointer;}
-.btn.ghost{background:#eef4ef;color:var(--ink); border:1px solid var(--bd);}
-
-/* Danger 换成橙色 */
-.btn.danger{
-  background: var(--danger);
-  color: var(--danger-ink);
+.btn{
+  border:0;
+  background:var(--prim);
+  color:var(--prim-ink);
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
 }
-.btn.danger:hover{ background: var(--danger-hover); }
-.btn.danger:active{ transform: translateY(1px); }
-.btn.danger:focus-visible{ outline: 2px solid var(--danger-ring); outline-offset: 2px; }
+.btn.ghost{
+  background:#eef4ef;
+  color:var(--ink);
+  border:1px solid var(--bd);
+}
+
+/* danger 换成柑橘橙 */
+.btn.danger{
+  background:#ff9f45;   /* 明亮橙色 */
+  color:#fff;
+}
+.btn.danger:hover{
+  background:#e68a2e;   /* hover 深一点 */
+}
 
 /* 工具条 */
 .bar{display:flex; gap:10px; align-items:center; padding:0 18px 14px;}
 .bar input[type="date"], .bar input[type="text"], .bar input[type="file"]{
-  background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:10px;
+  padding:10px 12px;
 }
 
 /* 搜索行 */
 .search{display:flex; gap:10px; align-items:center; padding:0 18px 8px;}
-.search input{flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;}
+.search input{
+  flex:1;
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:10px;
+  padding:10px 12px;
+}
 .muted{color:var(--muted); font-size:12px;}
 
 /* 列表区域 */
@@ -125,7 +139,7 @@ main{padding:0 18px 60px;}
 
 footer{color:var(--muted); text-align:center; padding:20px;}
 
-/* 底部工具条（导出/备份/导入） */
+/* 底部工具条 */
 .tools-bottom{
   display:flex;
   justify-content:center;
@@ -149,5 +163,6 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     gap:12px;
   }
   .card{ margin:0; }
+
   .card-title{ font-size:16px; }
 }
