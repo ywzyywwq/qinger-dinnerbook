@@ -153,3 +153,13 @@ footer{color:var(--muted); text-align:center; padding:20px;}
     column-count: 2;
   }
 }
+/* 手机端：让两边边距和列间距一致，看齐 */
+@media (max-width: 768px) {
+  main {
+    padding: 0 12px 60px;   /* 从 18px 改为 12px，与 column-gap 一致 */
+    column-gap: 12px;       /* 保持一致的缝隙 */
+  }
+  .card {
+    margin: 0 0 12px;       /* 只留底部间距，避免左右再“撑开” */
+  }
+}
