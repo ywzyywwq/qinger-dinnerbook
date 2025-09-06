@@ -3,90 +3,62 @@
   --card: #ffffff;
   --ink: #2c3e2c;
   --muted: #6a7d6a;
-  --prim: #6aa67a;         /* 主绿色 */
+  --prim: #6aa67a;        /* 主按钮绿色 */
   --prim-ink:#ffffff;
   --bd:#d7e3d8;
 
-  /* 方案 B：柔和橙色 Danger */
-  --accent: #f59e0b;       /* 删除/清空 */
-  --accent-ink: #ffffff;
-  --accent-hover: #e88c00; /* hover 深一点 */
+  /* 方案B：删除/清空按钮用柔和橙色 */
+  --danger: #F0A45D;
+  --danger-hover:#EC8F3F;
+  --danger-ring: rgba(236,143,63,.35);
 }
 
-/* ===== 基础 ===== */
+/* 基础 */
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
+html, body { max-width:100%; overflow-x:hidden; }
 body{
   margin:0;
   background:linear-gradient(180deg,#f3f7f3,#e9f2ea);
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
 }
-html, body { max-width:100%; overflow-x:hidden; }
 
-/* ===== 头部 / 按钮 ===== */
+/* 顶部 */
 header{ display:flex; align-items:center; gap:12px; padding:14px 18px; }
 header img.avatar{width:28px;height:28px;border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1);}
 header .title{font-weight:700;}
 
+/* 按钮 */
 .btn{
-  border:0;
-  background:var(--prim);
-  color:var(--prim-ink);
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
+  border:0; border-radius:10px; cursor:pointer;
+  padding:10px 14px; font-weight:600;
+  transition:transform .06s ease, box-shadow .12s ease, background-color .15s ease;
 }
-.btn:hover{ filter: brightness(0.96); }
-.btn:active{ filter: brightness(0.92); }
+.btn:active{ transform:translateY(1px); }
 
-.btn.ghost{
-  background:#eef4ef;
-  color:var(--ink);
-  border:1px solid var(--bd);
-}
+.btn{ background:var(--prim); color:var(--prim-ink); }
+.btn:hover{ filter:brightness(0.97); }
+.btn.ghost{ background:#eef4ef; color:var(--ink); border:1px solid var(--bd); }
 
-/* Danger 采用柔和橙色（方案 B） */
-.btn.danger{
-  background:var(--accent);
-  color:var(--accent-ink);
-}
-.btn.danger:hover{ background:var(--accent-hover); }
+/* 方案B：柔和橙色 danger */
+.btn.danger{ background:var(--danger); color:#fff; }
+.btn.danger:hover{ background:var(--danger-hover); }
+.btn.danger:focus{ outline:0; box-shadow:0 0 0 3px var(--danger-ring); }
 
-/* ===== 工具条 / 搜索 ===== */
-.bar{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding:0 18px 14px;
-}
-.bar input[type="date"],
-.bar input[type="text"],
-.bar input[type="file"]{
-  background:var(--card);
-  border:1px solid var(--bd);
-  border-radius:10px;
-  padding:10px 12px;
+/* 工具条 */
+.bar{display:flex; gap:10px; align-items:center; padding:0 18px 14px;}
+.bar input[type="date"], .bar input[type="text"], .bar input[type="file"]{
+  background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
 }
 
-.search{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding:0 18px 8px;
-}
-.search input{
-  flex:1;
-  background:var(--card);
-  border:1px solid var(--bd);
-  border-radius:10px;
-  padding:10px 12px;
-}
-.muted{ color:var(--muted); font-size:12px; }
+/* 搜索行 */
+.search{display:flex; gap:10px; align-items:center; padding:0 18px 8px;}
+.search input{flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;}
+.muted{color:var(--muted); font-size:12px;}
 
-/* ===== 列表区域 ===== */
-main{ padding:0 18px 60px; }
-
+/* 列表区域 */
+main{padding:0 18px 60px;}
 .card{
   background:var(--card);
   border:1px solid var(--bd);
@@ -95,7 +67,7 @@ main{ padding:0 18px 60px; }
   box-shadow:0 6px 16px rgba(22,44,22,.05);
 }
 
-/* 卡片头：标题在上，日期在下 */
+/* 卡片头：标题黑字，日期在下方 */
 .card-hd{
   display:flex;
   flex-direction:column;
@@ -118,7 +90,8 @@ main{ padding:0 18px 60px; }
 }
 .card-hd .count{ display:none; } /* 隐藏“1张图”等 */
 
-.thumbs{ display:block; }
+/* 图片区 */
+.thumbs{display:block;}
 .thumb{
   width:100%;
   height:auto;
@@ -129,25 +102,19 @@ main{ padding:0 18px 60px; }
   cursor:zoom-in;
 }
 
-.ops{ display:flex; gap:10px; margin-top:10px; }
-.empty{ color:var(--muted); text-align:center; padding:20px; }
+/* 卡片操作区 */
+.ops{display:flex; gap:10px; margin-top:10px;}
 
-/* ===== 月视图 ===== */
+/* 空态 */
+.empty{color:var(--muted); text-align:center; padding:20px;}
+
+/* ===== 月视图（修正：小图不贴边、列宽稳定） ===== */
 .month-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:8px 18px;
+  display:flex; align-items:center; justify-content:space-between; padding:8px 18px;
 }
-
-/* FIX: 使用 minmax(0,1fr) 并允许列内容收缩，避免 Safari 把列挤瘦/挤掉 */
 .month-grid{
-  display:grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr)); /* 关键修复 */
-  gap:12px;
-  padding: 0 18px 24px;
+  display:grid; grid-template-columns:repeat(7,1fr); gap:12px; padding:0 18px 24px;
 }
-
 .cell{
   background:var(--card);
   border:1px solid var(--bd);
@@ -155,62 +122,42 @@ main{ padding:0 18px 60px; }
   border-radius:12px;
   padding:8px;
   position:relative;
-  min-width:0;           /* FIX: 允许列内收缩 */
-  box-sizing:border-box;
-  overflow:hidden;       /* FIX: 防止内容外溢挤坏后一列 */
+
+  /* 让日期在上、小图区域在下，更整齐 */
+  display:flex; flex-direction:column;
 }
 .cell.blank{ background:transparent; border:0; }
+.day{ font-size:12px; color:var(--muted); }
+.badge{ background:var(--prim); color:#fff; border-radius:9px; font-size:10px; padding:2px 6px; margin-left:6px; }
 
-.day{
-  font-size:12px;
-  color:var(--muted);
-  min-width:0;           /* FIX: 不参与撑宽 */
-}
-.badge{
-  background:var(--prim);
-  color:white;
-  border-radius:9px;
-  font-size:10px;
-  padding:2px 6px;
-  margin-left:6px;
-}
-
+/* 小图容器：与边框留白，且靠下对齐 */
 .mini-wrap{
-  display:flex;
-  gap:6px;
-  padding-top:6px;
-  flex-wrap:wrap;
-  min-width:0;          /* FIX: 阻止 flex 内容撑开列 */
+  display:flex; flex-wrap:wrap; gap:6px;
+  padding:8px 0 0;        /* 与日期留缝，不贴顶 */
+  margin-top:auto;        /* 把缩略图区域推到 cell 底部 */
+  justify-content:flex-start;
 }
 .mini{
-  display:block;        /* FIX: 避免基线影响 */
-  width:36px;
-  height:36px;
-  object-fit:cover;
-  border-radius:6px;
-  border:1px solid var(--bd);
+  width:36px; height:36px; object-fit:cover;
+  border-radius:6px; border:1px solid var(--bd);
   cursor:zoom-in;
 }
 
-/* ===== 预览遮罩 ===== */
-.overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:9999; }
-.overlay.show{ display:flex; }
-.overlay .box{ background:#fff; padding:10px; border-radius:10px; max-width:90vw; max-height:90vh; }
-.overlay .box img{ max-width:86vw; max-height:86vh; display:block; border-radius:8px; }
-.overlay .close{ position:absolute; top:20px; right:20px; background:#fff; border:0; border-radius:999px; width:36px;height:36px; cursor:pointer; }
-.album-body{ display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto; }
-.album-body img{ width:320px; height:240px; object-fit:cover; border-radius:10px; }
+/* 预览遮罩 */
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:9999;}
+.overlay.show{display:flex;}
+.overlay .box{background:#fff; padding:10px; border-radius:10px; max-width:90vw; max-height:90vh;}
+.overlay .box img{max-width:86vw; max-height:86vh; display:block; border-radius:8px;}
+.overlay .close{position:absolute; top:20px; right:20px; background:#fff; border:0; border-radius:999px; width:36px;height:36px; cursor:pointer;}
+.album-body{display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto;}
+.album-body img{width:320px; height:240px; object-fit:cover; border-radius:10px;}
 
-/* ===== 底部工具条（导出/备份/导入） ===== */
-footer{ color:var(--muted); text-align:center; padding:20px; }
+footer{color:var(--muted); text-align:center; padding:20px;}
 
+/* 底部工具条（导出/备份/导入） */
 .tools-bottom{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  padding:16px 18px;
-  background:var(--bg);
-  border-top:1px solid var(--bd);
+  display:flex; justify-content:center; gap:12px;
+  padding:16px 18px; background:var(--bg); border-top:1px solid var(--bd);
 }
 .tools-bottom .btn{ min-width:90px; text-align:center; }
 
@@ -227,5 +174,6 @@ footer{ color:var(--muted); text-align:center; padding:20px; }
     gap:12px;
   }
   .card{ margin:0; }
+
   .card-title{ font-size:16px; }
 }
