@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>情儿的食谱 · 本地保存 + 云端原图</title>
 
   <!-- 样式 -->
@@ -17,7 +17,8 @@
     <img class="avatar" src="/icons/icon-64.png" alt="" />
     <div class="title">情儿的食谱 · 本地保存 + 云端原图</div>
     <div style="flex:1"></div>
-    <button id="toggle-view" class="btn ghost">月视图</button>
+    <!-- ✅ 已修改为主色按钮 -->
+    <button id="toggle-view" class="btn">月视图</button>
   </header>
 
   <!-- 工具条：日期 / 菜名 / 选择图片 / 记录晚餐 -->
@@ -67,7 +68,7 @@
   <footer>
     <p class="muted">© 2025 情儿的食谱</p>
 
-    <!-- 你要求：导出 / 备份 / 导入 放到最底部 -->
+    <!-- 导出 / 备份 / 导入 放到最底部 -->
     <div class="tools-bottom">
       <button id="export-csv"   class="btn ghost">导出 CSV</button>
       <button id="backup-json"  class="btn ghost">备份 JSON</button>
@@ -78,7 +79,7 @@
     </div>
   </footer>
 
-  <!-- 你原来的脚本放这里（保持不变即可） -->
+  <!-- 你原来的脚本 -->
   <script src="/app.js"></script>
 </body>
 </html>
