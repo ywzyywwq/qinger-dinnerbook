@@ -1,18 +1,18 @@
 :root{
-  --bg:#eef4ef;
-  --card:#ffffff;
-  --ink:#2c3e2c;
-  --muted:#6a7d6a;
-  --prim:#6aa67a;
+  --bg: #eef4ef;
+  --card: #ffffff;
+  --ink: #2c3e2c;
+  --muted: #6a7d6a;
+  --prim: #6aa67a;        /* 主按钮绿色 */
   --prim-ink:#ffffff;
   --bd:#d7e3d8;
 
-  /* 橘色 danger（方案 B） */
-  --danger:#fba562;
-  --danger-hover:#f78c3c;
+  /* 破坏性操作：柔和琥珀橙 */
+  --warn:#f4a259;
+  --warn-hover:#e6903f;
 }
 
-/* 基础 */
+/* ===== 基础 ===== */
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
@@ -21,158 +21,166 @@ body{
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
 }
-/* 禁止横向滚动 */
-html,body{ max-width:100%; overflow-x:hidden; }
+html, body { max-width:100%; overflow-x:hidden; }
 
-/* 顶部与按钮 */
+/* ===== 顶部与按钮 ===== */
 header{ display:flex; align-items:center; gap:12px; padding:14px 18px; }
-header img.avatar{ width:28px; height:28px; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1); }
-header .title{ font-weight:700; }
+header img.avatar{width:28px;height:28px;border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.1);}
+header .title{font-weight:700;}
 
 .btn{
-  border:0; background:var(--prim); color:var(--prim-ink);
-  padding:10px 14px; border-radius:10px; cursor:pointer;
+  border:0;
+  background:var(--prim);
+  color:var(--prim-ink);
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
 }
-.btn.ghost{ background:#eef4ef; color:var(--ink); border:1px solid var(--bd); }
-.btn.danger{ background:var(--danger); color:#fff; }
-.btn.danger:hover{ background:var(--danger-hover); }
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
+.btn.ghost{background:#eef4ef;color:var(--ink); border:1px solid var(--bd);}
+.btn.danger{ background:var(--warn); color:#fff; }
+.btn.danger:hover{ background:var(--warn-hover); }
 
-.muted{ color:var(--muted); font-size:12px; }
-
-/* 工具条 */
-.bar{ display:flex; gap:10px; align-items:center; padding:0 18px 14px; }
-.bar input[type="date"],
-.bar input[type="text"],
-.bar input[type="file"]{
-  background:var(--card); border:1px solid var(--bd);
-  border-radius:10px; padding:10px 12px;
-}
-
-/* 搜索行 */
-.search{ display:flex; gap:10px; align-items:center; padding:0 18px 8px; }
-.search input{
-  flex:1; background:var(--card); border:1px solid var(--bd);
-  border-radius:10px; padding:10px 12px;
+/* ===== 顶部工具条 ===== */
+.bar{display:flex; gap:10px; align-items:center; padding:0 18px 14px;}
+.bar input[type="date"], .bar input[type="text"], .bar input[type="file"]{
+  background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;
 }
 
-/* 列表区域 */
-main{ padding:0 18px 60px; }
+/* ===== 搜索行 ===== */
+.search{display:flex; gap:10px; align-items:center; padding:0 18px 8px;}
+.search input{flex:1; background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 12px;}
+.muted{color:var(--muted); font-size:12px;}
+
+/* ===== 列表区域 ===== */
+main{padding:0 18px 60px;}
 .card{
-  background:var(--card); border:1px solid var(--bd);
-  border-radius:16px; padding:14px; margin:12px 0;
+  background:var(--card);
+  border:1px solid var(--bd);
+  border-radius:16px;
+  padding:14px;
   box-shadow:0 6px 16px rgba(22,44,22,.05);
 }
 
-/* 卡片头：标题黑字，日期在下 */
+/* 卡片头：标题黑字，日期在下方 */
 .card-hd{
-  display:flex; flex-direction:column; align-items:flex-start;
-  gap:6px; margin-bottom:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+  margin-bottom:10px;
 }
 .card-title{
-  font-size:18px; font-weight:800; color:var(--ink);
-  line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-size:18px;
+  font-weight:800;
+  color:var(--ink);
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-.card-date{ font-size:12px; color:var(--muted); }
-.card-hd .count{ display:none; } /* 隐藏“1张图”等 */
+.card-date{
+  font-size:12px;
+  color:var(--muted);
+}
+/* 如果还有“1张图”之类的计数，隐藏 */
+.card-hd .count{ display:none; }
 
-/* 图片区（列表） */
-.thumbs{ display:block; }
+/* 图片区 */
+.thumbs{display:block;}
 .thumb{
-  width:100%; height:auto; aspect-ratio:1/1; object-fit:cover;
-  border-radius:10px; border:1px solid var(--bd); cursor:zoom-in;
+  width:100%;
+  height:auto;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid var(--bd);
+  cursor:zoom-in;
 }
 
-/* 操作按钮 */
-.ops{ display:flex; gap:10px; margin-top:10px; }
+/* 按钮区 */
+.ops{display:flex; gap:10px; margin-top:10px;}
 
 /* 空态 */
-.empty{ color:var(--muted); text-align:center; padding:20px; }
+.empty{color:var(--muted); text-align:center; padding:20px;}
 
-/* ===== 月视图 ===== */
+/* ====== 月视图（修正：不再挤窄/贴边） ====== */
 .month-head{
   display:flex; align-items:center; justify-content:space-between; padding:8px 18px;
 }
-/* 关键：列可收缩，不被内容撑开 */
 .month-grid{
   display:grid;
-  grid-template-columns:repeat(7, minmax(0, 1fr));
+  grid-template-columns:repeat(7, 1fr);
   gap:12px;
   padding:0 18px 24px;
 }
 .cell{
-  background:var(--card); border:1px solid var(--bd);
-  min-height:110px; border-radius:12px; padding:8px; position:relative;
-  min-width:0; /* 防止被内部内容撑宽，挤掉第7列 */
-}
-/* 防御性：内部也不允许撑宽 */
-.cell *{ min-width:0; }
-
-.cell.blank{ background:transparent; border:0; }
-.day{ font-size:12px; color:var(--muted); }
-.badge{
-  background:var(--prim); color:#fff; border-radius:9px;
-  font-size:10px; padding:2px 6px; margin-left:6px;
-}
-
-/* 小图容器：用 grid 而不是 flex，彻底规避 iOS flex+gap 裁切问题 */
-.mini-wrap{
-  display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
-  gap:6px;
-  padding:6px;                /* 留内边距，不贴边 */
-  max-width:100%;
-}
-/* 小图：占满格子，正方形，不会溢出 */
-.mini{
-  width:100%;
-  aspect-ratio:1/1;
-  height:auto;
-  display:block;
-  object-fit:cover;
-  border-radius:8px;
+  background:var(--card);
   border:1px solid var(--bd);
-  background:#fff;
-  box-shadow:0 1px 2px rgba(0,0,0,.06);
+  min-height:110px;
+  border-radius:12px;
+  padding:6px;                  /* 边距，避免小图贴边 */
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+}
+.cell.blank{background:transparent; border:0;}
+.day{font-size:12px; color:var(--muted); margin-bottom:4px;}
+.badge{background:var(--prim); color:white; border-radius:9px; font-size:10px; padding:2px 6px; margin-left:6px;}
+
+/* 小图容器：换行 + 内边距 */
+.mini-wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  padding:2px;                 /* 关键：不贴边框 */
+  justify-content:flex-start;
+  align-items:flex-start;
+}
+/* 小图 */
+.mini{
+  width:34px;
+  height:34px;
+  object-fit:cover;
+  border-radius:6px;
+  border:1px solid var(--bd);
   cursor:zoom-in;
+  flex-shrink:0;
 }
 
-/* 预览遮罩 */
-.overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,.6);
-  display:none; align-items:center; justify-content:center; z-index:9999;
-}
-.overlay.show{ display:flex; }
-.overlay .box{
-  background:#fff; padding:10px; border-radius:10px;
-  max-width:90vw; max-height:90vh;
-}
-.overlay .box img{ max-width:86vw; max-height:86vh; display:block; border-radius:8px; }
-.overlay .close{
-  position:absolute; top:20px; right:20px; background:#fff;
-  border:0; border-radius:999px; width:36px; height:36px; cursor:pointer;
-}
-.album-body{
-  display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto;
-}
-.album-body img{ width:320px; height:240px; object-fit:cover; border-radius:10px; }
+/* ===== 预览遮罩 ===== */
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:9999;}
+.overlay.show{display:flex;}
+.overlay .box{background:#fff; padding:10px; border-radius:10px; max-width:90vw; max-height:90vh;}
+.overlay .box img{max-width:86vw; max-height:86vh; display:block; border-radius:8px;}
+.overlay .close{position:absolute; top:20px; right:20px; background:#fff; border:0; border-radius:999px; width:36px;height:36px; cursor:pointer;}
+.album-body{display:flex; gap:10px; flex-wrap:wrap; max-width:92vw; max-height:84vh; overflow:auto;}
+.album-body img{width:320px; height:240px; object-fit:cover; border-radius:10px;}
 
-/* 底部工具条（导出/备份/导入） */
-footer{ color:var(--muted); text-align:center; padding:20px; }
+footer{color:var(--muted); text-align:center; padding:20px;}
+
+/* ===== 底部工具条（导出/备份/导入） ===== */
 .tools-bottom{
-  display:flex; justify-content:center; gap:12px;
-  padding:16px 18px; background:var(--bg); border-top:1px solid var(--bd);
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  padding:16px 18px;
+  background:var(--bg);
+  border-top:1px solid var(--bd);
 }
 .tools-bottom .btn{ min-width:90px; text-align:center; }
 
 /* ===== 手机端：2 列卡片 + 工具条换行 ===== */
-@media (max-width:768px){
+@media (max-width: 768px) {
   .bar{ flex-wrap:wrap; }
   .bar input[type="file"]{ flex:1 1 100%; width:100%; max-width:100%; }
   .bar input[type="file"]::-webkit-file-upload-button{ padding:6px 10px; }
   .bar #record-btn{ flex:1 1 100%; width:100%; text-align:center; white-space:nowrap; }
 
   #list-wrap{
-    display:grid; grid-template-columns:repeat(2, minmax(0, 1fr));
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
     gap:12px;
   }
   .card{ margin:0; }
