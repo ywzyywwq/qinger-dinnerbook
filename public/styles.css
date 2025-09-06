@@ -3,11 +3,11 @@
   --card:#ffffff;
   --ink:#2c3e2c;
   --muted:#6a7d6a;
-  --prim:#6aa67a;            /* 主要绿色 */
+  --prim:#6aa67a;
   --prim-ink:#ffffff;
   --bd:#d7e3d8;
 
-  /* 橘色 danger 方案（B） */
+  /* 橘色 danger（方案 B） */
   --danger:#fba562;
   --danger-hover:#f78c3c;
 }
@@ -21,7 +21,7 @@ body{
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
 }
-/* 兜底：禁止横向滚动 */
+/* 禁止横向滚动 */
 html,body{ max-width:100%; overflow-x:hidden; }
 
 /* 顶部与按钮 */
@@ -63,7 +63,7 @@ main{ padding:0 18px 60px; }
   box-shadow:0 6px 16px rgba(22,44,22,.05);
 }
 
-/* 卡片头：标题黑字，日期在下方 */
+/* 卡片头：标题黑字，日期在下 */
 .card-hd{
   display:flex; flex-direction:column; align-items:flex-start;
   gap:6px; margin-bottom:10px;
@@ -73,7 +73,7 @@ main{ padding:0 18px 60px; }
   line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .card-date{ font-size:12px; color:var(--muted); }
-.card-hd .count{ display:none; }  /* 隐藏“1张图”等 */
+.card-hd .count{ display:none; } /* 隐藏“1张图”等 */
 
 /* 图片区（列表） */
 .thumbs{ display:block; }
@@ -92,34 +92,48 @@ main{ padding:0 18px 60px; }
 .month-head{
   display:flex; align-items:center; justify-content:space-between; padding:8px 18px;
 }
-/* 关键修复：列可收缩，不被内容撑开；这样第 7 列不会被挤丢 */
+/* 关键：列可收缩，不被内容撑开 */
 .month-grid{
   display:grid;
-  grid-template-columns:repeat(7, minmax(0, 1fr)); /* FIX */
+  grid-template-columns:repeat(7, minmax(0, 1fr));
   gap:12px;
   padding:0 18px 24px;
 }
 .cell{
   background:var(--card); border:1px solid var(--bd);
   min-height:110px; border-radius:12px; padding:8px; position:relative;
-  min-width:0;                                         /* FIX：允许格子收缩 */
+  min-width:0; /* 防止被内部内容撑宽，挤掉第7列 */
 }
+/* 防御性：内部也不允许撑宽 */
+.cell *{ min-width:0; }
+
 .cell.blank{ background:transparent; border:0; }
 .day{ font-size:12px; color:var(--muted); }
 .badge{
   background:var(--prim); color:#fff; border-radius:9px;
   font-size:10px; padding:2px 6px; margin-left:6px;
 }
-/* 小图容器与缩略图：留内边距，避免贴边；并限制宽度不外溢 */
+
+/* 小图容器：用 grid 而不是 flex，彻底规避 iOS flex+gap 裁切问题 */
 .mini-wrap{
-  display:flex; flex-wrap:wrap; gap:6px; padding:6px;  /* 内边距 = 不贴边 */
-  max-width:100%; overflow:hidden;                     /* FIX：不撑宽列 */
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:6px;
+  padding:6px;                /* 留内边距，不贴边 */
+  max-width:100%;
 }
+/* 小图：占满格子，正方形，不会溢出 */
 .mini{
-  width:40px; height:40px; object-fit:cover;
-  border-radius:8px; border:1px solid var(--bd);
-  background:#fff; cursor:zoom-in; display:block;
+  width:100%;
+  aspect-ratio:1/1;
+  height:auto;
+  display:block;
+  object-fit:cover;
+  border-radius:8px;
+  border:1px solid var(--bd);
+  background:#fff;
   box-shadow:0 1px 2px rgba(0,0,0,.06);
+  cursor:zoom-in;
 }
 
 /* 预览遮罩 */
@@ -158,7 +172,7 @@ footer{ color:var(--muted); text-align:center; padding:20px; }
   .bar #record-btn{ flex:1 1 100%; width:100%; text-align:center; white-space:nowrap; }
 
   #list-wrap{
-    display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); /* 同步用 minmax(0,1fr) 更稳 */
+    display:grid; grid-template-columns:repeat(2, minmax(0, 1fr));
     gap:12px;
   }
   .card{ margin:0; }
