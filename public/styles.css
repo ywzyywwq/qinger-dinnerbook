@@ -199,8 +199,8 @@ main { padding: 0 18px 60px; }
   gap: 6px;
   padding-top: 6px;
   flex-wrap: wrap;
-  justify-content: center;      /* ✅ 修复：缩略图水平居中 */
-  align-items: center;          /* ✅ 可选：缩略图垂直居中 */
+  justify-content: center;      /* ✅ 缩略图居中 */
+  align-items: center;
   min-width: 0;
 }
 .mini {
@@ -280,6 +280,7 @@ footer {
 .tools-bottom .btn {
   min-width: 90px;
   text-align: center;
+  font-size: 14px; /* ✅ 字体统一设置（含导入 JSON） */
 }
 
 /* ===== 手机端样式优化 ===== */
