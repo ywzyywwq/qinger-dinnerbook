@@ -184,10 +184,9 @@ main { padding: 0 18px 60px; }
   font-size: 12px;
   color: var(--muted);
   min-width: 0;
-  /* ✅ 修复：让“日期+数量徽标”成为一个紧凑行内块，固定左对齐 */
-  display: inline-flex;
-  align-items: center;
-  gap: 6px; /* 日期与徽标的稳定间距 */
+  /* 原始：日期作为独立小块 */
+  display: inline-block;
+  vertical-align: middle;
 }
 .badge {
   background: var(--prim);
@@ -196,11 +195,8 @@ main { padding: 0 18px 60px; }
   font-size: 10px;
   padding: 2px 6px;
   margin-left: 6px;
-}
-/* ✅ 只在 .day 内覆盖徽标的左外边距，避免多余推挤 */
-.day .badge{
-  margin-left: 0;
-  flex: 0 0 auto; /* 不拉伸不压缩，避免被挤到右侧 */
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .mini-wrap {
@@ -318,19 +314,24 @@ footer {
   .card { margin: 0; }
   .card-title { font-size: 16px; }
 }
-/* === Fix: 日期行的数量徽标被挤到最右侧 === */
-.cell { text-align: left; } /* 避免任何父级 text-align 干扰 */
 
-.cell .day{
-  display: inline-flex !important;      /* 紧凑行内块 */
-  align-items: center;
-  justify-content: flex-start !important; /* 明确左对齐，防 space-between 等 */
-  gap: 6px;
-  width: auto !important;               /* 不占满整行 */
-  white-space: nowrap;                  /* 避免换行把徽标推走 */
+/* ========== Fix: 徽标被推到右边（兄弟元素强制同排左对齐） ========== */
+.cell { text-align: left; } /* 防父级 text-align 干扰 */
+
+.cell > .day,
+.cell > .badge {
+  display: inline-block !important;     /* 两者都作为行内块并排 */
+  vertical-align: middle;
 }
 
-.cell .day .badge{
-  margin-left: 0 !important;  /* 避免被其他规则设成 auto */
-  flex: 0 0 auto;             /* 不拉伸不压缩 */
+.cell > .badge {
+  margin-left: 6px !important;          /* 贴着日期右侧 */
+  float: none !important;               /* 禁止任何 float 推走 */
+  position: static !important;          /* 禁止 absolute 定位到右边 */
+  inset: auto !important;               /* 兜底：清空可能的定位 */
+  transform: none !important;
 }
+
+/* 若你的结构是 <div class="day"></div><span class="badge"></span> 后面紧跟 .mini-wrap，
+   为避免换行把 .badge 挤走，给 .mini-wrap 开新行 */
+.cell > .mini-wrap { display: block; margin-top: 6px; }
