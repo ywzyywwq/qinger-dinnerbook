@@ -180,16 +180,13 @@ main { padding: 0 18px 60px; }
   border: 0;
 }
 
-/* 日期+徽标 */
 .day {
   font-size: 12px;
   color: var(--muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 6px;
-  width: auto;
-  white-space: nowrap;
+  min-width: 0;
+  /* 原始：日期作为独立小块 */
+  display: inline-block;
+  vertical-align: middle;
 }
 .badge {
   background: var(--prim);
@@ -197,18 +194,19 @@ main { padding: 0 18px 60px; }
   border-radius: 9px;
   font-size: 10px;
   padding: 2px 6px;
-  flex: 0 0 auto;
-  margin-left: 0;
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
-/* 缩略图区域 */
 .mini-wrap {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
   gap: 6px;
-  margin-top: 6px;
+  padding-top: 6px;
+  flex-wrap: wrap;
+  justify-content: center;      /* ✅ 缩略图居中 */
+  align-items: center;
+  min-width: 0;
 }
 .mini {
   display: block;
@@ -287,7 +285,7 @@ footer {
 .tools-bottom .btn {
   min-width: 90px;
   text-align: center;
-  font-size: 14px;
+  font-size: 14px; /* ✅ 字体统一设置（含导入 JSON） */
 }
 
 /* ===== 手机端样式优化 ===== */
@@ -315,4 +313,31 @@ footer {
   }
   .card { margin: 0; }
   .card-title { font-size: 16px; }
+}
+
+/* ========== Fix: 徽标被推到右边（兄弟元素强制同排左对齐） ========== */
+.cell { text-align: left; } /* 防父级 text-align 干扰 */
+
+.cell > .day,
+.cell > .badge {
+  display: inline-block !important;     /* 两者都作为行内块并排 */
+  vertical-align: middle;
+}
+
+.cell > .badge {
+  margin-left: 6px !important;          /* 贴着日期右侧 */
+  float: none !important;               /* 禁止任何 float 推走 */
+  position: static !important;          /* 禁止 absolute 定位到右边 */
+  inset: auto !important;               /* 兜底：清空可能的定位 */
+  transform: none !important;
+}
+
+/* 若你的结构是 <div class="day"></div><span class="badge"></span> 后面紧跟 .mini-wrap，
+   为避免换行把 .badge 挤走，给 .mini-wrap 开新行 */
+.cell > .mini-wrap{
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 6px;  /* 保持和日期徽标有点间距 */
 }
