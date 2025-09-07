@@ -318,3 +318,19 @@ footer {
   .card { margin: 0; }
   .card-title { font-size: 16px; }
 }
+/* === Fix: 日期行的数量徽标被挤到最右侧 === */
+.cell { text-align: left; } /* 避免任何父级 text-align 干扰 */
+
+.cell .day{
+  display: inline-flex !important;      /* 紧凑行内块 */
+  align-items: center;
+  justify-content: flex-start !important; /* 明确左对齐，防 space-between 等 */
+  gap: 6px;
+  width: auto !important;               /* 不占满整行 */
+  white-space: nowrap;                  /* 避免换行把徽标推走 */
+}
+
+.cell .day .badge{
+  margin-left: 0 !important;  /* 避免被其他规则设成 auto */
+  flex: 0 0 auto;             /* 不拉伸不压缩 */
+}
